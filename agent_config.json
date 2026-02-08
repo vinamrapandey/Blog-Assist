@@ -3,5 +3,6 @@
     "api_key": "",
     "wp_url": "",
     "wp_user": "",
-    "wp_password": ""
+    "wp_password": "",
+    "topic": "Tech"
 }
