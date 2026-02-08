@@ -9,8 +9,9 @@ class LLMHandler:
         self.api_key = api_key
         # Set default models if not provided
         if provider == "Gemini" or provider == "Google Gemini":
-            self.model_name = model_name or "gemini-pro"
+            self.model_name = model_name or "gemini-1.5-flash"
             genai.configure(api_key=self.api_key)
+
 
         elif provider == "OpenAI":
             self.model_name = model_name or "gpt-4o-mini"
