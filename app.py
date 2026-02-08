@@ -15,6 +15,36 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# --- Core Logic Function ---
+def run_generation_cycle(provider, key, topic, count, url, user, password):
+    try:
+        # 1. Generate Content
+        log_message(f"Generating content for topic: {topic}...")
+        llm = LLMHandler(provider, key)
+        blog_data = llm.generate_blog(topic, count)
+        
+        if "error" in blog_data:
+            log_message(f"LLM Error: {blog_data['error']}")
+            return
+
+        title = blog_data.get("title", "No Title")
+        content = blog_data.get("content", "")
+        log_message(f"Generated: {title}")
+
+        # 2. Publish to WordPress
+        log_message("Publishing to WordPress...")
+        wp = WordPressHandler(url, user, password)
+        result = wp.publish_post(title, content, status="draft") # Default to draft for safety
+        
+        if "id" in result:
+             log_message(f"Success! Post ID: {result['id']} (Status: {result.get('status')})")
+        else:
+             log_message(f"WordPress Error: {result}")
+
+    except Exception as e:
+        log_message(f"Critical Error: {str(e)}")
+
+
 # --- Session State Initialization ---
 if 'scheduler' not in st.session_state:
     st.session_state.scheduler = AgentScheduler()
@@ -158,37 +188,4 @@ with col2:
             run_generation_cycle(llm_provider, api_key, final_topic, word_count, wp_url, wp_user, wp_password)
 
 # --- Core Logic Function ---
-def run_generation_cycle(provider, key, topic, count, url, user, password):
-    try:
-        # 1. Generate Content
-        log_message(f"Generating content for topic: {topic}...")
-        llm = LLMHandler(provider, key)
-        blog_data = llm.generate_blog(topic, count)
-        
-        if "error" in blog_data:
-            log_message(f"LLM Error: {blog_data['error']}")
-            return
-
-        title = blog_data.get("title", "No Title")
-        content = blog_data.get("content", "")
-        log_message(f"Generated: {title}")
-
-        # 2. Publish to WordPress
-        log_message("Publishing to WordPress...")
-        wp = WordPressHandler(url, user, password)
-        result = wp.publish_post(title, content, status="draft") # Default to draft for safety
-        
-        if "id" in result:
-             log_message(f"Success! Post ID: {result['id']} (Status: {result.get('status')})")
-        else:
-             log_message(f"WordPress Error: {result}")
-
-    except Exception as e:
-        log_message(f"Critical Error: {str(e)}")
-
-# --- Logs Display ---
-st.divider()
-st.subheader("Activity Log")
-log_container = st.container(height=200)
-for log in reversed(st.session_state.logs):
     log_container.text(log)

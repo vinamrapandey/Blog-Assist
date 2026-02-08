@@ -1,0 +1,7 @@
+{
+    "llm_provider": "OpenAI",
+    "api_key": "",
+    "wp_url": "https://deepskyblue-penguin-198436.hostingersite.com/",
+    "wp_user": "test",
+    "wp_password": "Test@123"
+}
