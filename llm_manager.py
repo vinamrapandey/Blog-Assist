@@ -8,9 +8,10 @@ class LLMHandler:
         self.provider = provider
         self.api_key = api_key
         # Set default models if not provided
-        if provider == "Gemini":
+        if provider == "Gemini" or provider == "Google Gemini":
             self.model_name = model_name or "gemini-pro"
             genai.configure(api_key=self.api_key)
+
         elif provider == "OpenAI":
             self.model_name = model_name or "gpt-4o-mini"
             self.client = OpenAI(api_key=self.api_key)
@@ -43,8 +44,9 @@ class LLMHandler:
         """
 
         try:
-            if self.provider == "Gemini":
+            if self.provider == "Gemini" or self.provider == "Google Gemini":
                 return self._generate_gemini(prompt)
+
             elif self.provider == "OpenAI":
                 return self._generate_openai(prompt)
             else:
