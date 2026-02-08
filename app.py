@@ -159,8 +159,16 @@ with col2:
         stop_btn = st.button("⏹ Stop Agent", type="secondary", use_container_width=True)
 
     if start_btn:
-        if not api_key or not wp_url or not wp_user or not wp_password:
-            st.error("Please configure all credentials in the sidebar first.")
+        # Validate credentials (skip API key for Simulated)
+        creds_ok = True
+        if llm_provider != "Simulated" and not api_key:
+            creds_ok = False
+        if not wp_url or not wp_user or not wp_password:
+            creds_ok = False
+
+        if not creds_ok:
+            st.error("Please configure all credentials (API Key & WordPress) in the sidebar.")
+
         else:
             # wrapper function for the job
             def job_wrapper():
@@ -185,8 +193,16 @@ with col2:
     st.divider()
     st.subheader("Manual Control")
     if st.button("Run Once Now", use_container_width=True):
-        if not api_key or not wp_url or not wp_user or not wp_password:
-            st.error("Missing credentials.")
+        # Validate credentials (skip API key for Simulated)
+        creds_ok = True
+        if llm_provider != "Simulated" and not api_key:
+            creds_ok = False
+        if not wp_url or not wp_user or not wp_password:
+            creds_ok = False
+
+        if not creds_ok:
+            st.error("Missing credentials. (API Key required for real models; WP Creds always required)")
+
         else:
             log_message("Starting manual run...")
             run_generation_cycle(llm_provider, api_key, final_topic, word_count, wp_url, wp_user, wp_password)
