@@ -122,7 +122,12 @@ if st.sidebar.button("Save Configuration"):
     st.sidebar.success("Configuration saved!")
 
 # --- Main Interface ---
-st.title("✍️ Blog Assist")
+# Title with Logo
+col_logo, col_title = st.columns([0.8, 10], vertical_alignment="bottom")
+with col_logo:
+    st.image("BlogAssist.png", width=50) 
+with col_title:
+    st.title("Blog Assist")
 st.markdown("Automate your blog with AI-generated content published directly to WordPress.")
 
 col1, col2 = st.columns([1, 1])
