@@ -65,9 +65,13 @@ st.sidebar.title("⚙️ Settings")
 st.sidebar.subheader("1. AI Provider")
 llm_provider = st.sidebar.selectbox(
     "Select LLM Provider",
-    ["Google Gemini", "OpenAI"],
-    index=0 if config.get("llm_provider") == "Google Gemini" else 1
+    ["Google Gemini", "OpenAI", "Simulated (Free Testing)"],
+    index=0 if config.get("llm_provider") == "Google Gemini" else 0
 )
+
+if llm_provider == "Simulated (Free Testing)":
+    llm_provider = "Simulated"
+
 
 api_key = st.sidebar.text_input(
     f"{llm_provider} API Key",

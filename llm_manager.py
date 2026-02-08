@@ -15,6 +15,9 @@ class LLMHandler:
         elif provider == "OpenAI":
             self.model_name = model_name or "gpt-4o-mini"
             self.client = OpenAI(api_key=self.api_key)
+        elif provider == "Simulated":
+            self.model_name = "simulated"
+
 
     def generate_blog(self, topic, word_count, tone="Professional", additional_instructions=""):
         """
@@ -49,6 +52,9 @@ class LLMHandler:
 
             elif self.provider == "OpenAI":
                 return self._generate_openai(prompt)
+            elif self.provider == "Simulated":
+                return self._generate_simulated(prompt, topic)
+
             else:
                 raise ValueError("Invalid LLM Provider")
         except Exception as e:
@@ -69,6 +75,17 @@ class LLMHandler:
             response_format={"type": "json_object"}
         )
         return self._clean_and_parse_json(response.choices[0].message.content)
+
+
+    def _generate_simulated(self, prompt, topic):
+        # Simulate a delay
+        import time
+        time.sleep(2)
+        return {
+            "title": f"Simulated Blog Post: {topic}",
+            "content": f"<h2>Introduction to {topic}</h2><p>This is a simulated blog post generated without an API key. In a real scenario, this would be comprehensive content about {topic}.</p><h3>Key Concepts</h3><ul><li>Point 1</li><li>Point 2</li></ul><p>Conclusion: This is just a test.</p>"
+        }
+
 
     def _clean_and_parse_json(self, text):
         # Remove markdown code fences if present
