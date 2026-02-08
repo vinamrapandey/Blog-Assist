@@ -9,40 +9,43 @@ from agent_scheduler import AgentScheduler
 
 # --- Page Config ---
 st.set_page_config(
-    page_title="AI Blog Writer Agent",
+    page_title="Blog Assist - AI Agent",
     page_icon="✍️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # --- Core Logic Function ---
-def run_generation_cycle(provider, key, topic, count, url, user, password):
+def run_generation_cycle(provider, key, topic, count, url, user, password, status="draft", logger=None):
+    if logger is None:
+        logger = lambda msg: print(f"LOG: {msg}") # Fallback
+
     try:
         # 1. Generate Content
-        log_message(f"Generating content for topic: {topic}...")
+        logger(f"Generating content for topic: {topic}...")
         llm = LLMHandler(provider, key)
         blog_data = llm.generate_blog(topic, count)
         
         if "error" in blog_data:
-            log_message(f"LLM Error: {blog_data['error']}")
+            logger(f"LLM Error: {blog_data['error']}")
             return
 
         title = blog_data.get("title", "No Title")
         content = blog_data.get("content", "")
-        log_message(f"Generated: {title}")
+        logger(f"Generated: {title}")
 
         # 2. Publish to WordPress
-        log_message("Publishing to WordPress...")
+        logger("Publishing to WordPress...")
         wp = WordPressHandler(url, user, password)
-        result = wp.publish_post(title, content, status="draft") # Default to draft for safety
+        result = wp.publish_post(title, content, status=status)
         
         if "id" in result:
-             log_message(f"Success! Post ID: {result['id']} (Status: {result.get('status')})")
+             logger(f"Success! Post ID: {result['id']} (Status: {result.get('status')})")
         else:
-             log_message(f"WordPress Error: {result}")
+             logger(f"WordPress Error: {result}")
 
     except Exception as e:
-        log_message(f"Critical Error: {str(e)}")
+        logger(f"Critical Error: {str(e)}")
 
 
 # --- Session State Initialization ---
@@ -52,9 +55,12 @@ if 'scheduler' not in st.session_state:
 if 'logs' not in st.session_state:
     st.session_state.logs = []
 
+# Helper for UI logging (optional wrapper if needed, but we use scheduler now)
 def log_message(message):
-    timestamp = datetime.now().strftime("%H:%M:%S")
-    st.session_state.logs.append(f"[{timestamp}] {message}")
+    # Log to scheduler if available
+    if 'scheduler' in st.session_state:
+        st.session_state.scheduler.log(message)
+
 
 # --- Load Config ---
 config = ConfigManager.load_config()
@@ -116,8 +122,8 @@ if st.sidebar.button("Save Configuration"):
     st.sidebar.success("Configuration saved!")
 
 # --- Main Interface ---
-st.title("✍️ AI Blog Writer Agent")
-st.markdown("Automate your tech blog with AI-generated content published directly to WordPress.")
+st.title("✍️ Blog Assist")
+st.markdown("Automate your blog with AI-generated content published directly to WordPress.")
 
 col1, col2 = st.columns([1, 1])
 
@@ -141,10 +147,19 @@ with col1:
     word_count = st.number_input("Approximate Word Count", min_value=300, max_value=2000, value=500, step=100)
     
     schedule_interval = st.selectbox(
-        "Automation Schedule (Hours)",
+        "Automation Schedule",
         [3, 6, 9, 12, 24, 48],
         index=4
     )
+
+
+    post_status = st.selectbox(
+        "Post Status",
+        ["draft", "publish"],
+        index=0,
+        help="Select 'publish' to make posts live immediately."
+    )
+
 
 with col2:
     st.subheader("Agent Status")
@@ -170,13 +185,16 @@ with col2:
             st.error("Please configure all credentials (API Key & WordPress) in the sidebar.")
 
         else:
-            # wrapper function for the job
-            def job_wrapper():
-                log_message(f"Starting scheduled job for topic: {final_topic}")
-                run_generation_cycle(llm_provider, api_key, final_topic, word_count, wp_url, wp_user, wp_password)
+             # wrapper function for the job
+            scheduler_instance = st.session_state.scheduler # Capture instance
             
-            st.session_state.scheduler.start(schedule_interval, job_wrapper)
+            def job_wrapper():
+                scheduler_instance.log(f"Starting scheduled job for topic: {final_topic}")
+                run_generation_cycle(llm_provider, api_key, final_topic, word_count, wp_url, wp_user, wp_password, post_status, logger=scheduler_instance.log)
+            
+            st.session_state.scheduler.start(schedule_interval, job_wrapper, unit="hours")
             log_message(f"Agent started. Running every {schedule_interval} hours.")
+            
             st.rerun()
 
     if stop_btn:
@@ -205,12 +223,16 @@ with col2:
 
         else:
             log_message("Starting manual run...")
-            run_generation_cycle(llm_provider, api_key, final_topic, word_count, wp_url, wp_user, wp_password)
+            run_generation_cycle(llm_provider, api_key, final_topic, word_count, wp_url, wp_user, wp_password, post_status, logger=st.session_state.scheduler.log)
+
 
 # --- Logs Display ---
 st.divider()
 st.subheader("Activity Log")
 log_container = st.container(height=200)
-for log in reversed(st.session_state.logs):
-    log_container.text(log)
+
+if 'scheduler' in st.session_state:
+    for log in reversed(st.session_state.scheduler.logs):
+        log_container.text(log)
+
 

@@ -11,8 +11,17 @@ class AgentScheduler:
         self.next_run_time = None
         self.last_run_time = None
         self.last_run_status = "Not started"
+        self.logs = []
 
-    def start(self, interval_hours, job_function):
+    def log(self, message):
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+        self.logs.append(f"[{timestamp}] {message}")
+        # Keep only last 100 logs
+        if len(self.logs) > 100:
+            self.logs.pop(0)
+
+
+    def start(self, interval, job_function, unit="hours"):
         if self.is_running:
             return
         
@@ -20,14 +29,17 @@ class AgentScheduler:
         schedule.clear()
         
         # Schedule the job
-        # For testing, we might want minutes, but for prod use hours
-        self.job = schedule.every(interval_hours).hours.do(job_function)
+        if unit == "minutes":
+            self.job = schedule.every(interval).minutes.do(job_function)
+        else:
+            self.job = schedule.every(interval).hours.do(job_function)
         
         self.next_run_time = self.job.next_run
         
         self.thread = threading.Thread(target=self._run_continuously)
         self.thread.daemon = True
         self.thread.start()
+
 
     def stop(self):
         self.is_running = False

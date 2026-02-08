@@ -1,8 +1,7 @@
 {
     "llm_provider": "Google Gemini",
-    "api_key": "",
-    "wp_url": "",
-    "wp_user": "",
-    "wp_password": "",
-    "topic": "Tech"
+    "api_key": "AIzaSyCDERQtL2Ho-wBgjMJRaUEpY6HgEPq3vJE",
+    "wp_url": "https://deepskyblue-penguin-198436.hostingersite.com/",
+    "wp_user": "test",
+    "wp_password": "Test@123"
 }
