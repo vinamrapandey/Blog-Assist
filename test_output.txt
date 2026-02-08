@@ -1,0 +1,5 @@
+--------------------------------------------------
+STARTING MANUAL VERIFICATION
+--------------------------------------------------
+
+[1/2] Testing Google Gemini Generation (Topic: Business)...
