@@ -187,5 +187,10 @@ with col2:
             log_message("Starting manual run...")
             run_generation_cycle(llm_provider, api_key, final_topic, word_count, wp_url, wp_user, wp_password)
 
-# --- Core Logic Function ---
+# --- Logs Display ---
+st.divider()
+st.subheader("Activity Log")
+log_container = st.container(height=200)
+for log in reversed(st.session_state.logs):
     log_container.text(log)
+
