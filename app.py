@@ -6,11 +6,13 @@ from config_manager import ConfigManager
 from llm_manager import LLMHandler
 from wp_manager import WordPressHandler
 from agent_scheduler import AgentScheduler
+from PIL import Image
+import os
 
 # --- Page Config ---
 st.set_page_config(
     page_title="Blog Assist - AI Agent",
-    page_icon="✍️",
+    page_icon="BlogAssist.png",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -125,7 +127,11 @@ if st.sidebar.button("Save Configuration"):
 # Title with Logo
 col_logo, col_title = st.columns([0.8, 10], vertical_alignment="bottom")
 with col_logo:
-    st.image("BlogAssist.png", width=50) 
+    try:
+        img = Image.open("BlogAssist.png")
+        st.image(img, width=50)
+    except Exception:
+        st.write("✍️") # Fallback emoji
 with col_title:
     st.title("Blog Assist")
 st.markdown("Automate your blog with AI-generated content published directly to WordPress.")
@@ -209,12 +215,22 @@ with col2:
 
     # Display Status
     sched_status = st.session_state.scheduler.get_status()
-    st.metric("Status", "Running" if sched_status["is_running"] else "Stopped")
-    st.text(f"Next Run: {sched_status['next_run']}")
-    st.text(f"Last Run: {sched_status['last_run']}")
+    
+    st.markdown("### Status")
+    if sched_status["is_running"]:
+        st.markdown(":green[**Running**]")
+    else:
+        st.markdown(":red[**Stopped**]")
 
-    st.divider()
-    st.subheader("Manual Control")
+    # Side-by-side Details
+    r1, r2 = st.columns(2)
+    with r1:
+        st.caption(f"**Next Run:** {sched_status['next_run']}")
+    with r2:
+        st.caption(f"**Last Run:** {sched_status['last_run']}")
+
+    st.write("") # Small spacer
+    st.markdown("### Manual Control")
     if st.button("Run Once Now", use_container_width=True):
         # Validate credentials (skip API key for Simulated)
         creds_ok = True
