@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend.core.database import get_db
-from backend.models.models import Config, Log
+from backend.models.models import Config, Log, PostRecord
 from backend.core.scheduler import start_agent, stop_agent, get_job_status, log_message
 from backend.services.tasks import run_generation_cycle
 from pydantic import BaseModel
 from typing import List
+from datetime import datetime, timedelta
 
 router = APIRouter()
 
@@ -19,6 +20,7 @@ class ConfigSchema(BaseModel):
     word_count: int
     schedule_interval: int
     post_status: str
+    google_analytics_id: str
 
 @router.get("/config")
 def get_config(db: Session = Depends(get_db)):
@@ -108,3 +110,33 @@ def get_logs(limit: int = 100, db: Session = Depends(get_db)):
     logs = db.query(Log).order_by(Log.timestamp.desc()).limit(limit).all()
     # Return formatted strings to match old UI
     return [f"[{log.timestamp.strftime('%H:%M:%S')}] {log.message}" for log in reversed(logs)]
+
+@router.get("/analytics")
+def get_analytics(db: Session = Depends(get_db)):
+    # Get total posts
+    total_posts = db.query(PostRecord).count()
+    
+    # Get last 7 days distribution
+    today = datetime.utcnow().date()
+    days = []
+    counts = []
+    
+    for i in range(6, -1, -1):
+        target_date = today - timedelta(days=i)
+        start_of_day = datetime(target_date.year, target_date.month, target_date.day)
+        end_of_day = start_of_day + timedelta(days=1)
+        
+        count = db.query(PostRecord).filter(
+            PostRecord.timestamp >= start_of_day,
+            PostRecord.timestamp < end_of_day
+        ).count()
+        
+        # Day name (e.g. "Mon")
+        days.append(target_date.strftime("%a"))
+        counts.append(count)
+        
+    return {
+        "total_posts": total_posts,
+        "labels": days,
+        "data": counts
+    }

@@ -1,6 +1,8 @@
 from backend.services.llm_manager import LLMHandler
 from backend.services.wp_manager import WordPressHandler
 from backend.core.scheduler import log_message
+from backend.core.database import SessionLocal
+from backend.models.models import PostRecord
 
 def run_generation_cycle(provider, key, topic, count, url, user, password, status="draft"):
     try:
@@ -24,6 +26,14 @@ def run_generation_cycle(provider, key, topic, count, url, user, password, statu
         
         if "id" in result:
              log_message(f"Success! Post ID: {result['id']} (Status: {result.get('status')})")
+             # Save to DB
+             db = SessionLocal()
+             try:
+                 new_post = PostRecord(title=title, topic=topic, status=result.get('status', status))
+                 db.add(new_post)
+                 db.commit()
+             finally:
+                 db.close()
         else:
              log_message(f"WordPress Error: {result}")
 
