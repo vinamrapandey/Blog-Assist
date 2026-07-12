@@ -7,3 +7,6 @@ openai
 requests
 pillow
 schedule
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart

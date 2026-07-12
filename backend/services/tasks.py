@@ -4,38 +4,31 @@ from backend.core.scheduler import log_message
 from backend.core.database import SessionLocal
 from backend.models.models import PostRecord
 
-def run_generation_cycle(provider, key, topic, count, url, user, password, status="draft"):
+def run_generation_cycle(provider, key, topic, count, url, user, password, status="draft", user_id: int = None):
     try:
-        # 1. Generate Content
-        log_message(f"Generating content for topic: {topic}...")
-        llm = LLMHandler(provider, key)
-        blog_data = llm.generate_blog(topic, count)
+        log_message(f"Starting auto-generation cycle for topic: {topic}", user_id=user_id)
         
-        if "error" in blog_data:
-            log_message(f"LLM Error: {blog_data['error']}")
-            return
-
-        title = blog_data.get("title", "No Title")
-        content = blog_data.get("content", "")
-        log_message(f"Generated: {title}")
-
+        # 1. Generate Content
+        llm = LLMHandler(provider, key)
+        title, content = llm.generate_post(topic, count)
+        log_message("Content generated successfully.", user_id=user_id)
+        
         # 2. Publish to WordPress
-        log_message("Publishing to WordPress...")
         wp = WordPressHandler(url, user, password)
-        result = wp.publish_post(title, content, status=status)
+        result = wp.create_post(title, content, status)
         
         if "id" in result:
-             log_message(f"Success! Post ID: {result['id']} (Status: {result.get('status')})")
+             log_message(f"Success! Post ID: {result['id']} (Status: {result.get('status')})", user_id=user_id)
              # Save to DB
              db = SessionLocal()
              try:
-                 new_post = PostRecord(title=title, topic=topic, status=result.get('status', status))
+                 new_post = PostRecord(title=title, topic=topic, status=result.get('status', status), user_id=user_id)
                  db.add(new_post)
                  db.commit()
              finally:
                  db.close()
         else:
-             log_message(f"WordPress Error: {result}")
+             log_message(f"WordPress Error: {result}", user_id=user_id)
 
     except Exception as e:
-        log_message(f"Critical Error: {str(e)}")
+        log_message(f"Error in cycle: {str(e)}", user_id=user_id)

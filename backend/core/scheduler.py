@@ -7,18 +7,18 @@ from backend.models.models import Log
 
 scheduler = BackgroundScheduler()
 
-def log_message(message: str):
+def log_message(message: str, user_id: int = None):
     db = SessionLocal()
     try:
-        new_log = Log(message=message)
+        new_log = Log(message=message, user_id=user_id)
         db.add(new_log)
         db.commit()
     finally:
         db.close()
-    print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {message}")
+    print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] User {user_id}: {message}")
 
-def get_job_status():
-    job = scheduler.get_job('blog_job')
+def get_job_status(job_id: str = 'blog_job'):
+    job = scheduler.get_job(job_id)
     if job:
         return {
             "is_running": True,
@@ -26,22 +26,33 @@ def get_job_status():
         }
     return {"is_running": False, "next_run": "N/A"}
 
-def start_agent(interval_hours: int, job_function):
-    if scheduler.get_job('blog_job'):
-        scheduler.remove_job('blog_job')
+def start_agent(interval_hours: int, job_function, job_id: str = 'blog_job'):
+    if scheduler.get_job(job_id):
+        scheduler.remove_job(job_id)
         
     scheduler.add_job(
         func=job_function,
         trigger=IntervalTrigger(hours=interval_hours),
-        id='blog_job',
+        id=job_id,
         name='Generate and publish blog post',
         replace_existing=True
     )
     if not scheduler.running:
         scheduler.start()
-    log_message(f"Agent started. Running every {interval_hours} hours.")
+    
+    # We extract user_id from job_id if we used the convention auto_post_{user_id}
+    try:
+        user_id = int(job_id.split('_')[-1])
+        log_message(f"Agent started. Running every {interval_hours} hours.", user_id=user_id)
+    except:
+        log_message(f"Agent started. Running every {interval_hours} hours.")
 
-def stop_agent():
-    if scheduler.get_job('blog_job'):
-        scheduler.remove_job('blog_job')
-    log_message("Agent stopped.")
+def stop_agent(job_id: str = 'blog_job'):
+    if scheduler.get_job(job_id):
+        scheduler.remove_job(job_id)
+    
+    try:
+        user_id = int(job_id.split('_')[-1])
+        log_message("Agent stopped.", user_id=user_id)
+    except:
+        log_message("Agent stopped.")

@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from backend.api import routes
+from backend.api.routes import router as api_router
+from backend.api.auth import router as auth_router
 from backend.core.database import engine, Base
 import os
 
@@ -20,7 +21,8 @@ app.add_middleware(
 )
 
 # Include API router
-app.include_router(routes.router, prefix="/api")
+app.include_router(auth_router, prefix="/api/auth")
+app.include_router(api_router, prefix="/api")
 
 # Serve static frontend
 frontend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "public")
