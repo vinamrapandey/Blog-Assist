@@ -22,11 +22,16 @@ class LLMHandler:
             self.model_name = "simulated"
 
 
-    def generate_blog(self, topic, word_count, tone="Professional", additional_instructions=""):
+    def generate_post(self, topic, word_count, tone="Professional", guidelines=None):
         """
         Generates a blog post and returns a JSON object with 'title' and 'content'.
         """
-        
+        guidelines_text = ""
+        if guidelines:
+            guidelines_text = "\\n**CRITICAL STYLE GUIDELINES (LEARNED FROM USER PREFERENCES):**\\n"
+            for g in guidelines:
+                guidelines_text += f"- {g}\\n"
+                
         prompt = f"""
         You are an expert blog writer. Write a comprehensive, engaging blog post.
         
@@ -34,7 +39,7 @@ class LLMHandler:
         - **Topic/Niche:** {topic}
         - **Approximate Word Count:** {word_count} words
         - **Tone:** {tone}
-        - **Additional Instructions:** {additional_instructions}
+        {guidelines_text}
         
         **Requirements:**
         1. Write a catchy, SEO-friendly title.
@@ -58,6 +63,54 @@ class LLMHandler:
             elif self.provider == "Simulated":
                 return self._generate_simulated(prompt, topic)
 
+            else:
+                raise ValueError("Invalid LLM Provider")
+        except Exception as e:
+            return {"error": str(e)}
+
+    def process_feedback_and_rewrite(self, title, content, feedback, tone="Professional", guidelines=None):
+        guidelines_text = ""
+        if guidelines:
+            guidelines_text = "\\n**Existing Style Guidelines:**\\n"
+            for g in guidelines:
+                guidelines_text += f"- {g}\\n"
+                
+        prompt = f"""
+        You are an expert blog writer. The user has provided feedback on a drafted blog post.
+        
+        **Original Draft:**
+        Title: {title}
+        Content: {content}
+        
+        **User Feedback:** {feedback}
+        {guidelines_text}
+        
+        **Task 1: Rewrite the Post**
+        Rewrite the draft strictly adhering to the user's feedback and any existing guidelines. 
+        Format content as HTML (no <html> or <body> tags).
+        
+        **Task 2: Extract a RAG Rule**
+        Extract a single, generalized style rule from the user's feedback that can be applied to ALL future posts (e.g. "Do not use the word 'delve'", "Always use a humorous tone", "Keep sentences short"). Keep it under 15 words.
+        
+        **Output Format:**
+        You must output ONLY a valid JSON object:
+        {{
+            "title": "Rewritten Title",
+            "content": "Rewritten HTML content...",
+            "new_rule": "The extracted generalized rule"
+        }}
+        """
+        try:
+            if self.provider == "Gemini" or self.provider == "Google Gemini":
+                return self._generate_gemini(prompt)
+            elif self.provider == "OpenAI":
+                return self._generate_openai(prompt)
+            elif self.provider == "Simulated":
+                return {
+                    "title": f"Rewritten: {title}", 
+                    "content": f"<p>Simulated rewrite incorporating: {feedback}</p>{content}",
+                    "new_rule": f"Simulated rule from: {feedback}"
+                }
             else:
                 raise ValueError("Invalid LLM Provider")
         except Exception as e:
