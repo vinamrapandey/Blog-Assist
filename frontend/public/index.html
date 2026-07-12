@@ -3,138 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog Assist Dashboard</title>
+    <title>Blog Assist</title>
     <link rel="icon" href="BlogAssist.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Analytics placeholder -->
+    <script id="ga-script"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #111827; }
+        .glass-card { background: #ffffff; border-radius: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid #f3f4f6;}
         .log-container { scroll-behavior: smooth; }
-        .log-container::-webkit-scrollbar { width: 8px; }
-        .log-container::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        .log-container::-webkit-scrollbar { width: 6px; }
+        .log-container::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        
+        /* Hide screens by default */
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .nav-item.active { color: #f97316; font-weight: 600; }
+        .nav-item.active svg { stroke: #f97316; }
     </style>
 </head>
-<body class="min-h-screen p-6">
-    <div class="max-w-7xl mx-auto flex gap-6">
+<body class="min-h-screen flex flex-col md:flex-row pb-16 md:pb-0">
+    
+    <!-- Sidebar / Bottom Nav -->
+    <nav class="fixed bottom-0 w-full md:relative md:w-64 bg-white border-t md:border-t-0 md:border-r border-gray-200 z-50 flex md:flex-col justify-around md:justify-start p-4 md:p-6 md:h-screen">
+        <div class="hidden md:flex items-center gap-3 mb-10">
+            <img src="BlogAssist.png" onerror="this.style.display='none'" alt="Logo" class="w-10 h-10 rounded-xl shadow-sm">
+            <h1 class="text-xl font-bold tracking-tight">Blog Assist</h1>
+        </div>
         
-        <!-- Sidebar Settings -->
-        <div class="w-1/3 glass-panel rounded-2xl p-6 shadow-xl h-fit">
-            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                Settings
-            </h2>
-            <form id="configForm" class="space-y-4">
-                <div>
-                    <label class="block text-sm text-slate-400 mb-1">AI Provider</label>
-                    <select id="llm_provider" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                        <option value="Google Gemini">Google Gemini</option>
-                        <option value="OpenAI">OpenAI</option>
-                        <option value="Simulated">Simulated (Testing)</option>
-                    </select>
+        <button onclick="switchScreen('home')" id="nav-home" class="nav-item active flex md:w-full flex-col md:flex-row items-center gap-1 md:gap-3 p-2 md:py-3 md:px-4 rounded-xl hover:bg-gray-50 text-gray-500 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            <span class="text-xs md:text-base">Home</span>
+        </button>
+        
+        <button onclick="switchScreen('logs')" id="nav-logs" class="nav-item flex md:w-full flex-col md:flex-row items-center gap-1 md:gap-3 p-2 md:py-3 md:px-4 rounded-xl hover:bg-gray-50 text-gray-500 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <span class="text-xs md:text-base">Activity</span>
+        </button>
+
+        <button onclick="switchScreen('settings')" id="nav-settings" class="nav-item flex md:w-full flex-col md:flex-row items-center gap-1 md:gap-3 p-2 md:py-3 md:px-4 rounded-xl hover:bg-gray-50 text-gray-500 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            <span class="text-xs md:text-base">Settings</span>
+        </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto w-full max-w-5xl mx-auto">
+        
+        <!-- ================= HOME SCREEN ================= -->
+        <div id="screen-home" class="screen active space-y-6">
+            <header class="mb-8">
+                <p class="text-gray-500 font-medium">Total Posts Published</p>
+                <h2 id="totalPosts" class="text-4xl font-extrabold tracking-tight">0</h2>
+            </header>
+
+            <!-- Chart Card -->
+            <div class="glass-card p-6">
+                <div class="flex justify-between items-end mb-4">
+                    <h3 class="font-bold text-gray-800">Weekly Activity</h3>
+                    <span id="nextRunBadge" class="bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full font-semibold">Next Run: N/A</span>
                 </div>
-                <div>
-                    <label class="block text-sm text-slate-400 mb-1">API Key</label>
-                    <input type="password" id="api_key" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                <div class="h-48 w-full">
+                    <canvas id="postsChart"></canvas>
                 </div>
-                <hr class="border-slate-700">
-                <div>
-                    <label class="block text-sm text-slate-400 mb-1">WordPress URL</label>
-                    <input type="text" id="wp_url" placeholder="https://yoursite.com" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            </div>
+
+            <!-- Agent Controls -->
+            <div>
+                <h3 class="font-bold text-gray-800 mb-3 ml-1">Agent Controls</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <button id="btnStart" class="bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-3xl flex flex-col items-center justify-center gap-2 transition-all shadow-md shadow-orange-500/20 active:scale-95">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span class="font-semibold text-sm">Start Auto</span>
+                    </button>
+                    <button id="btnStop" class="bg-gray-800 hover:bg-gray-900 text-white p-4 rounded-3xl flex flex-col items-center justify-center gap-2 transition-all shadow-md active:scale-95">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg>
+                        <span class="font-semibold text-sm">Stop Auto</span>
+                    </button>
+                    <button id="btnManual" class="col-span-2 md:col-span-1 bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-3xl flex flex-col items-center justify-center gap-2 transition-all shadow-md shadow-blue-500/20 active:scale-95">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <span class="font-semibold text-sm">Run Once Now</span>
+                    </button>
                 </div>
-                <div>
-                    <label class="block text-sm text-slate-400 mb-1">WP Username</label>
-                    <input type="text" id="wp_user" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            </div>
+            
+            <!-- Quick Status -->
+            <div class="glass-card p-4 flex items-center justify-between">
+                <span class="text-sm font-medium text-gray-500">Engine Status</span>
+                <div class="flex items-center gap-2">
+                    <div id="statusDot" class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                    <span id="statusIndicator" class="font-bold text-gray-800 text-sm">Stopped</span>
                 </div>
-                <div>
-                    <label class="block text-sm text-slate-400 mb-1">WP App Password</label>
-                    <input type="password" id="wp_password" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg transition-colors shadow-lg shadow-blue-500/30">Save Configuration</button>
-            </form>
+            </div>
         </div>
 
-        <!-- Main Interface -->
-        <div class="w-2/3 flex flex-col gap-6">
-            <!-- Header -->
-            <div class="glass-panel rounded-2xl p-6 shadow-xl flex items-center gap-4">
-                <img src="BlogAssist.png" onerror="this.style.display='none'" alt="Logo" class="w-12 h-12 rounded-xl">
-                <div>
-                    <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">Blog Assist</h1>
-                    <p class="text-slate-400">Automate your blog with AI-generated content directly to WordPress.</p>
-                </div>
-            </div>
-
-            <!-- Controls Panel -->
-            <div class="flex gap-6">
-                <!-- Agent Config -->
-                <div class="w-1/2 glass-panel rounded-2xl p-6 shadow-xl">
-                    <h3 class="text-lg font-semibold mb-4 text-emerald-400">Agent Configuration</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm text-slate-400 mb-1">Topic</label>
-                            <input type="text" id="topic" value="Tech" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div class="flex gap-4">
-                            <div class="w-1/2">
-                                <label class="block text-sm text-slate-400 mb-1">Word Count</label>
-                                <input type="number" id="word_count" value="500" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                            </div>
-                            <div class="w-1/2">
-                                <label class="block text-sm text-slate-400 mb-1">Schedule (Hrs)</label>
-                                <input type="number" id="schedule_interval" value="24" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm text-slate-400 mb-1">Post Status</label>
-                            <select id="post_status" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                                <option value="draft">Draft</option>
-                                <option value="publish">Publish</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Agent Status -->
-                <div class="w-1/2 glass-panel rounded-2xl p-6 shadow-xl flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-lg font-semibold mb-4 text-emerald-400">Agent Status</h3>
-                        <div class="flex gap-4 mb-4">
-                            <button id="btnStart" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg transition-colors font-medium shadow-lg shadow-emerald-500/30">▶ Start Agent</button>
-                            <button id="btnStop" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white py-2 rounded-lg transition-colors font-medium shadow-lg shadow-rose-500/30">⏹ Stop Agent</button>
-                        </div>
-                        <div class="bg-slate-800 rounded-lg p-4 mb-4 border border-slate-700">
-                            <div class="flex justify-between mb-2">
-                                <span class="text-slate-400 text-sm">Status:</span>
-                                <span id="statusIndicator" class="text-rose-400 font-medium text-sm">Stopped</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-slate-400 text-sm">Next Run:</span>
-                                <span id="nextRun" class="text-slate-200 text-sm">N/A</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button id="btnManual" class="w-full bg-slate-700 hover:bg-slate-600 text-white py-2 rounded-lg transition-colors font-medium">Run Once Now</button>
-                </div>
-            </div>
-
-            <!-- Activity Log -->
-            <div class="glass-panel rounded-2xl p-6 shadow-xl flex-grow flex flex-col">
-                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    Activity Log
-                </h3>
-                <div id="logContainer" class="log-container flex-grow bg-slate-900 border border-slate-800 rounded-lg p-4 overflow-y-auto font-mono text-sm text-green-400 h-64 space-y-1">
+        <!-- ================= LOGS SCREEN ================= -->
+        <div id="screen-logs" class="screen h-full flex flex-col">
+            <header class="mb-6">
+                <h2 class="text-3xl font-extrabold tracking-tight">Activity Logs</h2>
+                <p class="text-gray-500 text-sm">Real-time execution history</p>
+            </header>
+            <div class="glass-card p-4 flex-1 h-[70vh]">
+                <div id="logContainer" class="log-container h-full overflow-y-auto font-mono text-xs md:text-sm text-gray-700 space-y-2 p-2">
                     <!-- Logs injected here -->
                 </div>
             </div>
         </div>
-    </div>
+
+        <!-- ================= SETTINGS SCREEN ================= -->
+        <div id="screen-settings" class="screen pb-10">
+            <header class="mb-6">
+                <h2 class="text-3xl font-extrabold tracking-tight">Settings</h2>
+            </header>
+            
+            <form id="configForm" class="space-y-6">
+                
+                <!-- Content Config -->
+                <div class="glass-card p-6">
+                    <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Content Strategy</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Topic / Niche</label>
+                            <input type="text" id="topic" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Post Status</label>
+                            <select id="post_status" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                                <option value="draft">Save as Draft</option>
+                                <option value="publish">Publish Immediately</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Word Count</label>
+                            <input type="number" id="word_count" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Schedule (Hrs)</label>
+                            <input type="number" id="schedule_interval" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Integrations -->
+                <div class="glass-card p-6">
+                    <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Integrations</h3>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">AI Provider</label>
+                                <select id="llm_provider" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                                    <option value="Google Gemini">Google Gemini</option>
+                                    <option value="OpenAI">OpenAI</option>
+                                    <option value="Simulated">Simulated (Testing)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">API Key</label>
+                                <input type="password" id="api_key" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">WordPress URL</label>
+                                <input type="text" id="wp_url" placeholder="https://yoursite.com" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">WP Username</label>
+                                <input type="text" id="wp_user" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">WP App Password</label>
+                                <input type="password" id="wp_password" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics -->
+                <div class="glass-card p-6">
+                    <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Analytics</h3>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Google Analytics ID</label>
+                        <input type="text" id="google_analytics_id" placeholder="G-XXXXXXXXXX" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                        <p class="text-xs text-gray-400 mt-2">Leave blank to disable tracking.</p>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-gray-900/20 active:scale-95">
+                    Save Configuration
+                </button>
+            </form>
+        </div>
+
+    </main>
 
     <script>
         const API_URL = '/api';
+        let chartInstance = null;
 
-        // Load Config on Startup
+        // --- Navigation ---
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById('screen-' + screenId).classList.add('active');
+            document.getElementById('nav-' + screenId).classList.add('active');
+            
+            if(screenId === 'logs') fetchLogs();
+            if(screenId === 'home') fetchAnalytics();
+        }
+
+        // --- Chart.js Setup ---
+        function initChart(labels, data) {
+            const ctx = document.getElementById('postsChart').getContext('2d');
+            
+            // Gradient fill
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(249, 115, 22, 0.2)'); // Orange
+            gradient.addColorStop(1, 'rgba(249, 115, 22, 0)');
+            
+            if (chartInstance) chartInstance.destroy();
+            
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Posts',
+                        data: data,
+                        borderColor: '#f97316',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#f97316',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false, drawBorder: false }, ticks: { display: false } },
+                        x: { grid: { display: false, drawBorder: false }, ticks: { color: '#9ca3af', font: { family: 'Inter', size: 10 } } }
+                    },
+                    interaction: { intersect: false, mode: 'index', }
+                }
+            });
+        }
+
+        // --- API Calls ---
+        async function fetchAnalytics() {
+            try {
+                const res = await fetch(`${API_URL}/analytics`);
+                const data = await res.json();
+                document.getElementById('totalPosts').innerText = data.total_posts.toLocaleString();
+                initChart(data.labels, data.data);
+            } catch(e) {}
+        }
+
         async function loadConfig() {
             try {
                 const res = await fetch(`${API_URL}/config`);
@@ -150,12 +285,26 @@
                 document.getElementById('word_count').value = data.word_count || 500;
                 document.getElementById('schedule_interval').value = data.schedule_interval || 24;
                 document.getElementById('post_status').value = data.post_status || 'draft';
-            } catch (err) {
-                console.error("Error loading config", err);
-            }
+                document.getElementById('google_analytics_id').value = data.google_analytics_id || '';
+
+                // Inject GA if present
+                if (data.google_analytics_id) {
+                    injectGA(data.google_analytics_id);
+                }
+            } catch (err) {}
         }
 
-        // Save Config
+        function injectGA(id) {
+            const script = document.createElement('script');
+            script.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
+            script.async = true;
+            document.head.appendChild(script);
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', id);
+        }
+
         document.getElementById('configForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const config = {
@@ -168,6 +317,7 @@
                 word_count: parseInt(document.getElementById('word_count').value),
                 schedule_interval: parseInt(document.getElementById('schedule_interval').value),
                 post_status: document.getElementById('post_status').value,
+                google_analytics_id: document.getElementById('google_analytics_id').value,
             };
             
             try {
@@ -176,9 +326,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(config)
                 });
-                if(res.ok) {
-                    alert("Configuration saved!");
-                }
+                if(res.ok) alert("Settings saved!");
             } catch(err) {
                 alert("Error saving config");
             }
@@ -186,13 +334,9 @@
 
         // Controls
         document.getElementById('btnStart').addEventListener('click', async () => {
-            // Must save the config values from the right side first before starting
-            document.getElementById('configForm').dispatchEvent(new Event('submit'));
-            
             const res = await fetch(`${API_URL}/start`, { method: 'POST' });
-            const data = await res.json();
             if(res.ok) fetchStatus();
-            else alert(data.detail);
+            else { const d = await res.json(); alert(d.detail); }
         });
 
         document.getElementById('btnStop').addEventListener('click', async () => {
@@ -201,19 +345,14 @@
         });
 
         document.getElementById('btnManual').addEventListener('click', async () => {
-             // Must save the config values from the right side first before starting
-             document.getElementById('configForm').dispatchEvent(new Event('submit'));
-             
             const btn = document.getElementById('btnManual');
-            btn.innerText = "Running...";
-            btn.disabled = true;
+            btn.querySelector('span').innerText = "Running...";
             try {
                 const res = await fetch(`${API_URL}/run-manual`, { method: 'POST' });
-                const data = await res.json();
-                if(!res.ok) alert(data.detail);
+                if(!res.ok) { const d = await res.json(); alert(d.detail); }
+                fetchAnalytics();
             } finally {
-                btn.innerText = "Run Once Now";
-                btn.disabled = false;
+                btn.querySelector('span').innerText = "Run Once Now";
             }
         });
 
@@ -223,32 +362,32 @@
                 const res = await fetch(`${API_URL}/status`);
                 const data = await res.json();
                 
-                const statusIndicator = document.getElementById('statusIndicator');
+                const indicator = document.getElementById('statusIndicator');
+                const dot = document.getElementById('statusDot');
+                
                 if (data.is_running) {
-                    statusIndicator.innerText = "Running";
-                    statusIndicator.className = "text-emerald-400 font-medium text-sm";
+                    indicator.innerText = "Active";
+                    dot.className = "w-2.5 h-2.5 rounded-full bg-orange-500";
                 } else {
-                    statusIndicator.innerText = "Stopped";
-                    statusIndicator.className = "text-rose-400 font-medium text-sm";
+                    indicator.innerText = "Stopped";
+                    dot.className = "w-2.5 h-2.5 rounded-full bg-gray-300";
                 }
                 
-                document.getElementById('nextRun').innerText = data.next_run;
+                document.getElementById('nextRunBadge').innerText = data.is_running ? `Next: ${data.next_run}` : 'Inactive';
             } catch(err) {}
         }
 
         async function fetchLogs() {
+            if(!document.getElementById('screen-logs').classList.contains('active')) return;
             try {
                 const res = await fetch(`${API_URL}/logs`);
                 const logs = await res.json();
                 const container = document.getElementById('logContainer');
-                
-                // Only update if logs changed to avoid scroll jumping
                 const currentContent = container.innerText;
                 const newContent = logs.join('\n');
                 
                 if (currentContent !== newContent) {
-                    container.innerHTML = logs.map(l => `<div>${l}</div>`).join('');
-                    container.scrollTop = container.scrollHeight;
+                    container.innerHTML = logs.map(l => `<div class="border-b border-gray-100 pb-1 mb-1">${l}</div>`).join('');
                 }
             } catch(err) {}
         }
@@ -256,10 +395,10 @@
         // Init
         loadConfig();
         fetchStatus();
-        fetchLogs();
+        fetchAnalytics();
         
         setInterval(fetchStatus, 3000);
-        setInterval(fetchLogs, 2000);
+        setInterval(fetchLogs, 3000);
     </script>
 </body>
 </html>
