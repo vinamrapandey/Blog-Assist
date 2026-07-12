@@ -120,6 +120,31 @@ def run_manual(db: Session = Depends(get_db), current_user: User = Depends(get_c
         
     return {"status": "success", "title": result.get("title", "Draft"), "content": result.get("content", "")}
 
+@router.post("/instant-post")
+def instant_post(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    config = db.query(Config).filter(Config.user_id == current_user.id).first()
+    if not config or not config.wp_url or not config.wp_user or not config.wp_password:
+        raise HTTPException(status_code=400, detail="Incomplete configuration.")
+    if config.llm_provider != "Simulated" and not config.api_key:
+        raise HTTPException(status_code=400, detail="API Key required for real models.")
+
+    log_message("Starting instant generate & publish...", user_id=current_user.id)
+    try:
+        run_generation_cycle(
+                provider=config.llm_provider,
+                key=config.api_key,
+                topic=config.topic,
+                count=config.word_count,
+                url=config.wp_url,
+                user=config.wp_user,
+                password=config.wp_password,
+                status=config.post_status,
+                user_id=current_user.id
+            )
+        return {"status": "success", "message": "Post successfully generated and published!"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 class FeedbackSchema(BaseModel):
     title: str
     content: str
