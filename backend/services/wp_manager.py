@@ -14,6 +14,24 @@ class WordPressHandler:
         token = base64.b64encode(credentials.encode()).decode('utf-8')
         return {'Authorization': f'Basic {token}'}
 
+    def validate_connection(self):
+        """
+        Validates the WordPress connection and credentials by fetching the current user profile.
+        """
+        endpoint = f"{self.url}/wp-json/wp/v2/users/me"
+        try:
+            response = requests.get(endpoint, headers=self.auth_header, timeout=10)
+            response.raise_for_status()
+            return {"status": "success", "user": response.json().get('name')}
+        except requests.exceptions.RequestException as e:
+            error_msg = str(e)
+            if response is not None:
+                try:
+                    error_msg = response.json().get('message', error_msg)
+                except:
+                    error_msg = response.text or error_msg
+            return {"status": "error", "message": f"WordPress connection failed: {error_msg}"}
+
     def publish_post(self, title, content, status="draft", categories=None, tags=None):
         """
         Publishes a post to WordPress.

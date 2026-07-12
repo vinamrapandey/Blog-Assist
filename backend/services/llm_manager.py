@@ -22,6 +22,28 @@ class LLMHandler:
             self.model_name = "simulated"
 
 
+    def test_connection(self):
+        if self.provider == "Simulated":
+            return {"status": "success"}
+            
+        try:
+            if self.provider == "Gemini" or self.provider == "Google Gemini":
+                model = genai.GenerativeModel(self.model_name)
+                response = model.generate_content("Say OK")
+                if response.text:
+                    return {"status": "success"}
+            elif self.provider == "OpenAI":
+                response = self.client.chat.completions.create(
+                    model=self.model_name,
+                    messages=[{"role": "user", "content": "Say OK"}],
+                    max_tokens=5
+                )
+                if response.choices:
+                    return {"status": "success"}
+            return {"status": "error", "message": "Unknown error validating API key."}
+        except Exception as e:
+            return {"status": "error", "message": f"AI API Key Validation Failed: {str(e)}"}
+
     def generate_post(self, topic, word_count, tone="Professional", guidelines=None):
         """
         Generates a blog post and returns a JSON object with 'title' and 'content'.

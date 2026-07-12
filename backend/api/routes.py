@@ -37,6 +37,20 @@ def get_config(db: Session = Depends(get_db), current_user: User = Depends(get_c
 
 @router.post("/config")
 def update_config(config_data: ConfigSchema, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    # 1. Validate LLM
+    if config_data.llm_provider != "Simulated" and config_data.api_key:
+        llm = LLMHandler(config_data.llm_provider, config_data.api_key)
+        llm_test = llm.test_connection()
+        if llm_test.get("status") == "error":
+            raise HTTPException(status_code=400, detail=f"AI Validation Failed: {llm_test.get('message')}")
+            
+    # 2. Validate WordPress
+    if config_data.wp_url and config_data.wp_user and config_data.wp_password:
+        wp = WordPressHandler(config_data.wp_url, config_data.wp_user, config_data.wp_password)
+        wp_test = wp.validate_connection()
+        if wp_test.get("status") == "error":
+            raise HTTPException(status_code=400, detail=f"WordPress Validation Failed: {wp_test.get('message')}")
+
     config = db.query(Config).filter(Config.user_id == current_user.id).first()
     if not config:
         config = Config(user_id=current_user.id)
@@ -46,7 +60,7 @@ def update_config(config_data: ConfigSchema, db: Session = Depends(get_db), curr
         setattr(config, key, value)
     
     db.commit()
-    return {"status": "success", "message": "Configuration saved"}
+    return {"status": "success", "message": "Configuration validated and saved"}
 
 @router.post("/start")
 def start_agent_api(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):

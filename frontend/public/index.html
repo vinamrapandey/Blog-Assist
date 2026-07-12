@@ -430,6 +430,11 @@
         }
 
         async function finishOnboarding() {
+            const btn = document.querySelector('#onb-step3 button.bg-orange-500');
+            const originalText = btn.innerText;
+            btn.innerText = "Validating...";
+            btn.disabled = true;
+
             const config = {
                 llm_provider: document.getElementById('onb_provider').value,
                 api_key: document.getElementById('onb_api_key').value,
@@ -439,8 +444,19 @@
                 topic: document.getElementById('onb_topic').value,
                 word_count: 500, schedule_interval: 24, post_status: 'draft', google_analytics_id: ''
             };
-            await fetchAuth(`${API_URL}/config`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(config) });
-            window.location.reload();
+            try {
+                const res = await fetchAuth(`${API_URL}/config`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(config) });
+                if(res.ok) {
+                    window.location.reload();
+                } else {
+                    const data = await res.json();
+                    alert("Validation Error: " + (data.detail || "Check your credentials."));
+                }
+            } catch(e) {
+                alert("Network error while validating.");
+            }
+            btn.innerText = originalText;
+            btn.disabled = false;
         }
 
         // Navigation
@@ -600,6 +616,11 @@
 
         document.getElementById('configForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.innerText = "Validating...";
+            btn.disabled = true;
+
             const config = {
                 llm_provider: document.getElementById('llm_provider').value, api_key: document.getElementById('api_key').value,
                 wp_url: document.getElementById('wp_url').value, wp_user: document.getElementById('wp_user').value,
@@ -607,8 +628,20 @@
                 word_count: parseInt(document.getElementById('word_count').value), schedule_interval: parseInt(document.getElementById('schedule_interval').value),
                 post_status: document.getElementById('post_status').value, google_analytics_id: document.getElementById('google_analytics_id').value,
             };
-            await fetchAuth(`${API_URL}/config`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(config) });
-            alert("Settings saved!");
+            
+            try {
+                const res = await fetchAuth(`${API_URL}/config`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(config) });
+                if(res.ok) {
+                    alert("Settings validated and saved!");
+                } else {
+                    const data = await res.json();
+                    alert("Validation Error: " + (data.detail || "Check your credentials."));
+                }
+            } catch(e) {
+                alert("Network error while validating.");
+            }
+            btn.innerText = originalText;
+            btn.disabled = false;
         });
 
         document.getElementById('btnStart').addEventListener('click', async () => { await fetchAuth(`${API_URL}/start`, { method: 'POST' }); fetchStatus(); });
