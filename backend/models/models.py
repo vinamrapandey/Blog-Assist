@@ -16,6 +16,7 @@ class Config(Base):
     schedule_interval = Column(Integer, default=24)
     post_status = Column(String, default="draft")
     is_agent_running = Column(Boolean, default=False)
+    google_analytics_id = Column(String, default="")
 
 class Log(Base):
     __tablename__ = "logs"
@@ -23,3 +24,12 @@ class Log(Base):
     id = Column(Integer, primary_key=True, index=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
     message = Column(String)
+
+class PostRecord(Base):
+    __tablename__ = "posts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    title = Column(String)
+    topic = Column(String)
+    status = Column(String)
