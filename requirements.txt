@@ -1,6 +1,9 @@
-streamlit
+fastapi
+uvicorn[standard]
+sqlalchemy
+apscheduler
 google-generativeai
 openai
 requests
+pillow
 schedule
-keyboard
