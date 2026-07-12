@@ -13,8 +13,8 @@
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #111827; }
         .glass-card { background: #ffffff; border-radius: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid #f3f4f6;}
         .log-container { scroll-behavior: smooth; }
-        .log-container::-webkit-scrollbar { width: 6px; }
-        .log-container::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .log-container::-webkit-scrollbar, .preview-content::-webkit-scrollbar { width: 6px; }
+        .log-container::-webkit-scrollbar-thumb, .preview-content::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
         
         /* Layout logic */
         .screen { display: none; }
@@ -24,8 +24,15 @@
         .nav-item.active { color: #f97316; font-weight: 600; }
         .nav-item.active svg { stroke: #f97316; }
         
-        #app-layout { display: none; } /* Hidden until logged in */
-        #auth-layout { display: flex; } /* Visible by default */
+        #app-layout { display: none; }
+        #auth-layout { display: flex; }
+        
+        /* Preview Modal */
+        #preview-modal { display: none; }
+        #preview-modal.active { display: flex; animation: fadeIn 0.2s ease; }
+        .preview-content h2 { font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; }
+        .preview-content p { margin-bottom: 1rem; color: #4b5563; }
+        .preview-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -57,10 +64,10 @@
     </div>
 
     <!-- ================= MAIN APP LAYOUT ================= -->
-    <div id="app-layout" class="h-screen flex flex-col md:flex-row pb-16 md:pb-0">
+    <div id="app-layout" class="h-screen flex flex-col md:flex-row pb-16 md:pb-0 relative">
         
         <!-- Sidebar / Bottom Nav -->
-        <nav class="fixed bottom-0 w-full md:relative md:w-64 bg-white border-t md:border-t-0 md:border-r border-gray-200 z-50 flex md:flex-col justify-around md:justify-start p-4 md:p-6 md:h-screen">
+        <nav class="fixed bottom-0 w-full md:relative md:w-64 bg-white border-t md:border-t-0 md:border-r border-gray-200 z-40 flex md:flex-col justify-around md:justify-start p-4 md:p-6 md:h-screen">
             <div class="hidden md:flex items-center gap-3 mb-10">
                 <img src="BlogAssist.png" onerror="this.style.display='none'" alt="Logo" class="w-10 h-10 rounded-xl shadow-sm">
                 <h1 class="text-xl font-bold tracking-tight">Blog Assist</h1>
@@ -69,6 +76,11 @@
             <button onclick="switchScreen('home')" id="nav-home" class="nav-item active flex md:w-full flex-col md:flex-row items-center gap-1 md:gap-3 p-2 md:py-3 md:px-4 rounded-xl hover:bg-gray-50 text-gray-500 transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                 <span class="text-xs md:text-base">Home</span>
+            </button>
+            
+            <button onclick="switchScreen('knowledge')" id="nav-knowledge" class="nav-item flex md:w-full flex-col md:flex-row items-center gap-1 md:gap-3 p-2 md:py-3 md:px-4 rounded-xl hover:bg-gray-50 text-gray-500 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                <span class="text-xs md:text-base">AI Brain</span>
             </button>
             
             <button onclick="switchScreen('logs')" id="nav-logs" class="nav-item flex md:w-full flex-col md:flex-row items-center gap-1 md:gap-3 p-2 md:py-3 md:px-4 rounded-xl hover:bg-gray-50 text-gray-500 transition-colors">
@@ -165,10 +177,26 @@
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg>
                             <span class="font-semibold text-sm">Stop Auto</span>
                         </button>
-                        <button id="btnManual" class="col-span-2 md:col-span-1 bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-3xl flex flex-col items-center justify-center gap-2 shadow-md">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                            <span class="font-semibold text-sm">Preview & Post (RAG)</span>
+                        <button id="btnManual" class="col-span-2 md:col-span-1 bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-3xl flex flex-col items-center justify-center gap-2 shadow-md relative">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            <span class="font-semibold text-sm">Preview Draft</span>
+                            <div id="previewLoader" class="absolute inset-0 bg-blue-600 rounded-3xl flex items-center justify-center hidden">
+                                <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            </div>
                         </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ================= AI KNOWLEDGE SCREEN ================= -->
+            <div id="screen-knowledge" class="screen h-full">
+                <header class="mb-6">
+                    <h2 class="text-3xl font-extrabold tracking-tight">AI Knowledge Base</h2>
+                    <p class="text-gray-500">The rules your AI has learned from your feedback.</p>
+                </header>
+                <div class="glass-card p-6">
+                    <div id="guidelinesContainer" class="space-y-3">
+                        <div class="text-gray-400 text-sm italic p-4 text-center">No rules learned yet. Generate a preview and give feedback!</div>
                     </div>
                 </div>
             </div>
@@ -249,14 +277,74 @@
                 </form>
             </div>
         </main>
+        
+        <!-- ================= PREVIEW MODAL OVERLAY ================= -->
+        <div id="preview-modal" class="fixed inset-0 z-50 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4">
+            <div class="bg-white w-full max-w-6xl h-[90vh] rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden relative">
+                
+                <!-- Left Pane: Preview -->
+                <div class="w-full md:w-2/3 h-full border-r border-gray-200 flex flex-col bg-gray-50">
+                    <div class="p-4 border-b border-gray-200 bg-white flex justify-between items-center">
+                        <div>
+                            <span class="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded">DRAFT</span>
+                            <h3 id="prevTitle" class="text-xl font-bold mt-1">Generated Title Here</h3>
+                        </div>
+                    </div>
+                    <div class="p-8 overflow-y-auto flex-1 preview-content text-gray-800 bg-white m-4 rounded-xl shadow-sm border border-gray-100" id="prevContent">
+                        Loading...
+                    </div>
+                </div>
+
+                <!-- Right Pane: Feedback Loop -->
+                <div class="w-full md:w-1/3 h-full bg-white flex flex-col">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-lg font-bold">Review & Critique</h3>
+                            <button onclick="closePreview()" class="text-gray-400 hover:text-gray-700"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                        </div>
+                        <p class="text-xs text-gray-500">The AI will rewrite the draft and learn your stylistic preferences for future posts.</p>
+                    </div>
+                    
+                    <div class="p-6 flex-1 overflow-y-auto">
+                        <label class="block text-xs font-bold text-gray-600 mb-2 uppercase">Quick Critiques</label>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <button onclick="addCritique('Make it more professional')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">More Professional</button>
+                            <button onclick="addCritique('Make it more casual and funny')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">More Casual</button>
+                            <button onclick="addCritique('Shorter sentences, easier to read')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">Shorter Sentences</button>
+                            <button onclick="addCritique('Add more bullet points and lists')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">More Lists</button>
+                        </div>
+
+                        <label class="block text-xs font-bold text-gray-600 mb-2 uppercase">Custom Instructions</label>
+                        <textarea id="feedbackText" rows="4" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Rewrite the introduction to hook the reader. Don't use the word 'delve'."></textarea>
+                        
+                        <button id="btnApplyFeedback" onclick="applyFeedback()" class="w-full mt-4 bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-3 rounded-xl transition-colors relative">
+                            <span id="txtApply">Rewrite & Learn</span>
+                            <div id="loaderApply" class="absolute inset-0 flex items-center justify-center hidden">
+                                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="p-6 border-t border-gray-200 bg-gray-50">
+                        <button id="btnPublishDraft" onclick="publishDraft()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl shadow-md transition-all relative">
+                            <span id="txtPub">Approve & Publish to WordPress</span>
+                            <div id="loaderPub" class="absolute inset-0 flex items-center justify-center hidden">
+                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- JS Logic including Auth -->
+    <!-- JS Logic including Auth & RAG -->
     <script>
         const API_URL = '/api';
         let authToken = localStorage.getItem('token');
-        let authMode = 'login'; // login or register
+        let authMode = 'login';
         let chartInstance = null;
+        let currentDraft = null;
 
         // Init Check
         if (authToken) {
@@ -319,10 +407,7 @@
 
         // Onboarding Logic
         async function checkOnboarding(force = false) {
-            if (force) {
-                switchScreen('onboarding');
-                return;
-            }
+            if (force) { switchScreen('onboarding'); return; }
             try {
                 const res = await fetchAuth(`${API_URL}/config`);
                 const data = await res.json();
@@ -339,7 +424,6 @@
             document.getElementById('onb-step2').classList.add('hidden');
             document.getElementById('onb-step3').classList.add('hidden');
             document.getElementById(`onb-step${step}`).classList.remove('hidden');
-            
             document.getElementById('step1-ind').className = step === 1 ? "text-orange-500" : "";
             document.getElementById('step2-ind').className = step === 2 ? "text-orange-500" : "";
             document.getElementById('step3-ind').className = step === 3 ? "text-orange-500" : "";
@@ -355,9 +439,7 @@
                 topic: document.getElementById('onb_topic').value,
                 word_count: 500, schedule_interval: 24, post_status: 'draft', google_analytics_id: ''
             };
-            await fetchAuth(`${API_URL}/config`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(config)
-            });
+            await fetchAuth(`${API_URL}/config`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(config) });
             window.location.reload();
         }
 
@@ -371,6 +453,7 @@
             
             if(screenId === 'logs') fetchLogs();
             if(screenId === 'home') fetchAnalytics();
+            if(screenId === 'knowledge') fetchKnowledge();
         }
 
         // Charts
@@ -386,7 +469,6 @@
             });
         }
 
-        // API Polling
         async function fetchAnalytics() {
             try {
                 const res = await fetchAuth(`${API_URL}/analytics`);
@@ -396,6 +478,112 @@
             } catch(e) {}
         }
         
+        // RAG Feedback System
+        document.getElementById('btnManual').addEventListener('click', async () => {
+            document.getElementById('previewLoader').classList.remove('hidden');
+            try {
+                const res = await fetchAuth(`${API_URL}/run-manual`, { method: 'POST' });
+                const data = await res.json();
+                if (res.ok) {
+                    currentDraft = data;
+                    document.getElementById('prevTitle').innerText = data.title;
+                    document.getElementById('prevContent').innerHTML = data.content;
+                    document.getElementById('preview-modal').classList.add('active');
+                } else { alert(data.detail); }
+            } catch(err) { alert("Error generating draft"); }
+            document.getElementById('previewLoader').classList.add('hidden');
+        });
+
+        function closePreview() {
+            document.getElementById('preview-modal').classList.remove('active');
+            document.getElementById('feedbackText').value = '';
+        }
+
+        function addCritique(text) {
+            const box = document.getElementById('feedbackText');
+            if(box.value) box.value += '\\n- ' + text;
+            else box.value = '- ' + text;
+        }
+
+        async function applyFeedback() {
+            const feedback = document.getElementById('feedbackText').value;
+            if(!feedback) return alert("Please enter some feedback first.");
+            
+            document.getElementById('loaderApply').classList.remove('hidden');
+            document.getElementById('txtApply').classList.add('opacity-0');
+            
+            try {
+                const res = await fetchAuth(`${API_URL}/submit-feedback`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: currentDraft.title, content: currentDraft.content, feedback })
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    currentDraft = data;
+                    document.getElementById('prevTitle').innerText = data.title;
+                    document.getElementById('prevContent').innerHTML = data.content;
+                    document.getElementById('feedbackText').value = '';
+                    if(data.learned_rule) {
+                        alert("AI Learned Rule: " + data.learned_rule);
+                        if(document.getElementById('screen-knowledge').classList.contains('active')) fetchKnowledge();
+                    }
+                }
+            } catch(e) {}
+            
+            document.getElementById('loaderApply').classList.add('hidden');
+            document.getElementById('txtApply').classList.remove('opacity-0');
+        }
+
+        async function publishDraft() {
+            document.getElementById('loaderPub').classList.remove('hidden');
+            document.getElementById('txtPub').classList.add('opacity-0');
+            try {
+                const res = await fetchAuth(`${API_URL}/publish-draft`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: currentDraft.title, content: currentDraft.content })
+                });
+                if(res.ok) {
+                    alert("Published successfully!");
+                    closePreview();
+                    fetchAnalytics();
+                } else {
+                    const data = await res.json();
+                    alert("Publish error: " + data.detail);
+                }
+            } catch(e) {}
+            document.getElementById('loaderPub').classList.add('hidden');
+            document.getElementById('txtPub').classList.remove('opacity-0');
+        }
+
+        async function fetchKnowledge() {
+            try {
+                const res = await fetchAuth(`${API_URL}/guidelines`);
+                const rules = await res.json();
+                const container = document.getElementById('guidelinesContainer');
+                if(rules.length === 0) {
+                    container.innerHTML = `<div class="text-gray-400 text-sm italic p-4 text-center">No rules learned yet. Generate a preview and give feedback!</div>`;
+                } else {
+                    container.innerHTML = rules.map(r => `
+                        <div class="flex justify-between items-center p-4 bg-gray-50 border border-gray-100 rounded-xl">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="font-medium text-gray-800">${r.rule}</span>
+                            </div>
+                            <button onclick="deleteRule(${r.id})" class="text-red-400 hover:text-red-600 p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        </div>
+                    `).join('');
+                }
+            } catch(e) {}
+        }
+
+        async function deleteRule(id) {
+            if(confirm("Delete this AI rule?")) {
+                await fetchAuth(`${API_URL}/guidelines/${id}`, { method: 'DELETE' });
+                fetchKnowledge();
+            }
+        }
+
+        // Settings & General
         function loadConfigData(data) {
             document.getElementById('llm_provider').value = data.llm_provider || 'Google Gemini';
             document.getElementById('api_key').value = data.api_key || '';
@@ -425,20 +613,14 @@
 
         document.getElementById('btnStart').addEventListener('click', async () => { await fetchAuth(`${API_URL}/start`, { method: 'POST' }); fetchStatus(); });
         document.getElementById('btnStop').addEventListener('click', async () => { await fetchAuth(`${API_URL}/stop`, { method: 'POST' }); fetchStatus(); });
-        document.getElementById('btnManual').addEventListener('click', async () => {
-            alert("Preview & RAG flow will open here! (Coming in Phase 3)");
-        });
 
         async function fetchStatus() {
             if(!authToken) return;
             try {
                 const res = await fetchAuth(`${API_URL}/status`);
                 const data = await res.json();
-                const indicator = document.getElementById('statusIndicator');
-                const dot = document.getElementById('statusDot');
-                if (data.is_running) { indicator.innerText = "Active"; dot.className = "w-2.5 h-2.5 rounded-full bg-orange-500"; } 
-                else { indicator.innerText = "Stopped"; dot.className = "w-2.5 h-2.5 rounded-full bg-gray-300"; }
                 document.getElementById('nextRunBadge').innerText = data.is_running ? `Next: ${data.next_run}` : 'Inactive';
+                document.getElementById('nextRunBadge').className = data.is_running ? 'bg-orange-100 text-orange-700 text-xs px-3 py-1 rounded-full font-semibold' : 'bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full font-semibold';
             } catch(err) {}
         }
 
