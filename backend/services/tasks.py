@@ -10,7 +10,12 @@ def run_generation_cycle(provider, key, topic, count, url, user, password, statu
         
         # 1. Generate Content
         llm = LLMHandler(provider, key)
-        title, content = llm.generate_post(topic, count)
+        generated_data = llm.generate_post(topic, count)
+        if "error" in generated_data:
+            raise Exception(generated_data["error"])
+        
+        title = generated_data.get("title", "Draft Title")
+        content = generated_data.get("content", "Draft Content")
         log_message("Content generated successfully.", user_id=user_id)
         
         # 2. Publish to WordPress
