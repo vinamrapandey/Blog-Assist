@@ -229,13 +229,13 @@
             </div>
 
             <!-- ================= LOGS SCREEN ================= -->
-            <div id="screen-logs" class="screen h-full">
-                <div class="h-full flex flex-col">
-                    <header class="mb-6">
+            <div id="screen-logs" class="screen">
+                <div class="h-[calc(100vh-220px)] md:h-[calc(100vh-160px)] flex flex-col">
+                    <header class="mb-6 shrink-0">
                         <h2 class="text-3xl font-extrabold tracking-tight">Activity Logs</h2>
                     </header>
-                    <div class="glass-card p-4 flex-1 h-[70vh]">
-                        <div id="logContainer" class="log-container h-full overflow-y-auto font-mono text-xs md:text-sm text-gray-700 space-y-2 p-2"></div>
+                    <div class="glass-card p-4 flex-1 overflow-hidden flex flex-col">
+                        <div id="logContainer" class="log-container flex-1 overflow-y-auto font-mono text-xs md:text-sm text-gray-700 space-y-2 p-2"></div>
                     </div>
                 </div>
             </div>
