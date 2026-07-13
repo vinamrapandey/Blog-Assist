@@ -173,22 +173,22 @@
 
             <!-- ================= HOME SCREEN ================= -->
             <div id="screen-home" class="screen active space-y-6">
-                <header class="mb-8">
-                    <p class="text-gray-500 font-medium">Total Posts Published</p>
+                <header class="mb-6 md:mb-4">
+                    <p class="text-gray-500 font-medium text-sm md:text-base">Total Posts Published</p>
                     <h2 id="totalPosts" class="text-4xl font-extrabold tracking-tight">0</h2>
                 </header>
 
-                <div class="glass-card p-6">
-                    <div class="flex justify-between items-end mb-4">
+                <div class="glass-card p-6 md:p-5">
+                    <div class="flex justify-between items-end mb-4 md:mb-2">
                         <h3 class="font-bold text-gray-800">Weekly Activity</h3>
                         <span id="nextRunBadge" class="bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full font-semibold">Next Run: N/A</span>
                     </div>
-                    <div class="h-48 w-full"><canvas id="postsChart"></canvas></div>
+                    <div class="h-48 md:h-40 w-full"><canvas id="postsChart"></canvas></div>
                 </div>
 
                 <div>
-                    <h3 class="font-bold text-gray-800 mb-3 ml-1">Agent Controls</h3>
-                    <div class="grid grid-cols-2 gap-4">
+                    <h3 class="font-bold text-gray-800 mb-3 md:mb-2 ml-1">Agent Controls</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <button id="btnStart" class="col-span-1 bg-white hover:bg-gray-50 text-[#0a0a0a] border border-gray-100 p-6 rounded-[2rem] flex flex-col items-center justify-center gap-3 shadow-sm transition-all">
                             <div class="p-4 bg-gray-100 rounded-full text-black"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg></div>
                             <span class="font-bold text-sm">Start Auto</span>
