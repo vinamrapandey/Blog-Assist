@@ -25,8 +25,9 @@
         .nav-item.active { color: #0a0a0a; font-weight: 700; border-bottom: 2px solid #ff4f21; }
         .nav-item.active svg { stroke: #ff4f21; }
         
+        #landing-layout { display: flex; }
+        #auth-layout { display: none; }
         #app-layout { display: none; }
-        #auth-layout { display: flex; }
         
         /* Preview Modal */
         #preview-modal { display: none; }
@@ -37,7 +38,74 @@
     </style>
 </head>
 <body class="min-h-screen">
-    
+    <!-- ================= LANDING PAGE LAYOUT ================= -->
+    <div id="landing-layout" class="min-h-screen flex flex-col bg-[#f0f0f2]">
+        <!-- Navbar -->
+        <nav class="w-full px-6 py-6 flex items-center justify-between max-w-6xl mx-auto">
+            <div class="flex items-center gap-3">
+                <img src="BlogAssist.png" onerror="this.style.display='none'" alt="Logo" class="w-10 h-10 rounded-[1rem] shadow-sm">
+                <h1 class="text-2xl font-bold tracking-tight text-[#0a0a0a]">BlogAssist</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="showAuth()" class="font-bold text-gray-500 hover:text-black transition-colors">Login</button>
+                <button onclick="showAuth()" class="bg-[#ff4f21] text-white px-6 py-2.5 rounded-[2rem] font-bold text-sm hover:bg-[#e0451b] shadow-xl shadow-orange-500/20 transition-all">Get Started</button>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <main class="flex-1 flex flex-col items-center justify-center px-4 py-12 md:py-24 text-center max-w-4xl mx-auto">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-100 text-sm font-bold text-[#ff4f21] mb-8 shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-[#ff4f21] animate-pulse"></span>
+                v1.0 is now live
+            </div>
+            <h2 class="text-5xl md:text-7xl font-extrabold tracking-tight text-[#0a0a0a] leading-[1.1] mb-6 font-['Syne']">
+                WordPress blogging on <span class="text-[#ff4f21]">Autopilot.</span>
+            </h2>
+            <p class="text-lg md:text-xl text-gray-500 font-medium mb-10 max-w-2xl mx-auto leading-relaxed">
+                BlogAssist uses advanced AI to automatically research, write, and publish high-quality, SEO-optimized articles to your WordPress site while learning your unique style.
+            </p>
+            <button onclick="showAuth()" class="bg-[#0a0a0a] hover:bg-black text-white px-10 py-5 rounded-[2rem] font-bold text-lg shadow-2xl transition-all hover:scale-105 flex items-center gap-3">
+                Start Automating Now
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </button>
+        </main>
+
+        <!-- Features Grid -->
+        <section class="w-full bg-white border-t border-gray-100 py-20 px-4 mt-auto">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16">
+                    <h3 class="text-3xl font-extrabold tracking-tight mb-4 font-['Syne']">Everything you need to scale your content.</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Feature 1 -->
+                    <div class="bg-[#f0f0f2] p-8 rounded-[2rem] border border-gray-100/50 hover:shadow-xl transition-all duration-300 group">
+                        <div class="w-14 h-14 bg-white rounded-[1.5rem] flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
+                            <span class="text-2xl">🧠</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3 font-['Syne']">Adaptive AI Brain</h4>
+                        <p class="text-gray-500 font-medium text-sm leading-relaxed">It learns your specific writing style and tone through a smart feedback loop. The more you critique its drafts, the better it gets.</p>
+                    </div>
+                    <!-- Feature 2 -->
+                    <div class="bg-[#f0f0f2] p-8 rounded-[2rem] border border-gray-100/50 hover:shadow-xl transition-all duration-300 group">
+                        <div class="w-14 h-14 bg-white rounded-[1.5rem] flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
+                            <span class="text-2xl">⚡</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3 font-['Syne']">Instant Publishing</h4>
+                        <p class="text-gray-500 font-medium text-sm leading-relaxed">Direct integration with your WordPress site using Application Passwords. No bulky plugins needed. Just connect securely and post.</p>
+                    </div>
+                    <!-- Feature 3 -->
+                    <div class="bg-[#f0f0f2] p-8 rounded-[2rem] border border-gray-100/50 hover:shadow-xl transition-all duration-300 group">
+                        <div class="w-14 h-14 bg-white rounded-[1.5rem] flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
+                            <span class="text-2xl">🕒</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3 font-['Syne']">Total Automation</h4>
+                        <p class="text-gray-500 font-medium text-sm leading-relaxed">Set a schedule and let it run entirely in the background. It will automatically research topics, generate drafts, and publish on autopilot.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
     <!-- ================= AUTHENTICATION LAYOUT ================= -->
     <div id="auth-layout" class="min-h-screen flex items-center justify-center p-4">
         <div class="glass-card p-10 w-full max-w-md">
@@ -374,7 +442,13 @@
         let currentDraft = null;
 
         // Init Check
+        function showAuth() {
+            document.getElementById('landing-layout').style.display = 'none';
+            document.getElementById('auth-layout').style.display = 'flex';
+        }
+
         if (authToken) {
+            document.getElementById('landing-layout').style.display = 'none';
             document.getElementById('auth-layout').style.display = 'none';
             document.getElementById('app-layout').style.display = 'flex';
             checkOnboarding();
