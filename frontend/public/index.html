@@ -8,10 +8,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script id="ga-script"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #111827; }
-        .glass-card { background: #ffffff; border-radius: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid #f3f4f6;}
+        body { font-family: 'Outfit', sans-serif; background-color: #f0f0f2; color: #0a0a0a; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Syne', sans-serif; letter-spacing: -0.02em; }
+        .glass-card { background: #ffffff; border-radius: 2rem; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03); border: 1px solid rgba(0,0,0,0.02);}
         .log-container { scroll-behavior: smooth; }
         .log-container::-webkit-scrollbar, .preview-content::-webkit-scrollbar { width: 6px; }
         .log-container::-webkit-scrollbar-thumb, .preview-content::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
@@ -21,8 +22,8 @@
         .screen.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .nav-item.active { color: #f97316; font-weight: 600; }
-        .nav-item.active svg { stroke: #f97316; }
+        .nav-item.active { color: #0a0a0a; font-weight: 700; border-bottom: 2px solid #ff4f21; }
+        .nav-item.active svg { stroke: #ff4f21; }
         
         #app-layout { display: none; }
         #auth-layout { display: flex; }
@@ -30,7 +31,7 @@
         /* Preview Modal */
         #preview-modal { display: none; }
         #preview-modal.active { display: flex; animation: fadeIn 0.2s ease; }
-        .preview-content h2 { font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; }
+        .preview-content h2 { font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; font-family: 'Syne', sans-serif; }
         .preview-content p { margin-bottom: 1rem; color: #4b5563; }
         .preview-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
     </style>
@@ -39,113 +40,108 @@
     
     <!-- ================= AUTHENTICATION LAYOUT ================= -->
     <div id="auth-layout" class="min-h-screen flex items-center justify-center p-4">
-        <div class="glass-card p-8 w-full max-w-md">
+        <div class="glass-card p-10 w-full max-w-md">
             <div class="flex justify-center mb-6">
-                <img src="BlogAssist.png" onerror="this.style.display='none'" alt="Logo" class="w-16 h-16 rounded-2xl shadow-sm">
+                <img src="BlogAssist.png" onerror="this.style.display='none'" alt="Logo" class="w-20 h-20 rounded-[2rem] shadow-sm">
             </div>
-            <h2 class="text-2xl font-extrabold text-center mb-2">Welcome to Blog Assist</h2>
-            <p class="text-gray-500 text-center mb-8 text-sm">Sign in to your workspace</p>
+            <h2 class="text-3xl font-extrabold text-center mb-2">Welcome Back.</h2>
+            <p class="text-gray-500 text-center mb-8 text-sm font-medium">Sign in to your workspace</p>
             
-            <form id="authForm" class="space-y-4">
+            <form id="authForm" class="space-y-5">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase">Username</label>
-                    <input type="text" id="auth_user" required class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Username</label>
+                    <input type="text" id="auth_user" required class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase">Password</label>
-                    <input type="password" id="auth_pass" required class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:ring-2 focus:ring-orange-500 outline-none">
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Password</label>
+                    <input type="password" id="auth_pass" required class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all">
                 </div>
-                <div class="flex gap-4 pt-2">
-                    <button type="submit" onclick="authMode='login'" class="flex-1 bg-gray-900 hover:bg-black text-white font-bold py-3 rounded-xl transition-all shadow-md">Sign In</button>
-                    <button type="submit" onclick="authMode='register'" class="flex-1 bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-3 rounded-xl transition-all shadow-sm">Create Account</button>
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" onclick="authMode='login'" class="flex-1 bg-[#0a0a0a] hover:bg-black text-white font-bold py-4 rounded-[2rem] transition-all shadow-xl">Sign In</button>
+                    <button type="submit" onclick="authMode='register'" class="flex-1 bg-gray-100 hover:bg-gray-200 text-[#0a0a0a] font-bold py-4 rounded-[2rem] transition-all">Create Account</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- ================= MAIN APP LAYOUT ================= -->
-    <div id="app-layout" class="h-screen flex flex-col md:flex-row pb-16 md:pb-0 relative">
+    <div id="app-layout" class="min-h-screen flex flex-col relative bg-[#f0f0f2]">
         
-        <!-- Sidebar / Bottom Nav -->
-        <nav class="fixed bottom-0 w-full md:relative md:w-64 bg-white border-t md:border-t-0 md:border-r border-gray-200 z-40 flex md:flex-col justify-around md:justify-start p-4 md:p-6 md:h-screen">
-            <div class="hidden md:flex items-center gap-3 mb-10">
-                <img src="BlogAssist.png" onerror="this.style.display='none'" alt="Logo" class="w-10 h-10 rounded-xl shadow-sm">
-                <h1 class="text-xl font-bold tracking-tight">Blog Assist</h1>
+        <!-- Top Navigation (Skara Style) -->
+        <nav class="w-full bg-[#f0f0f2] z-40 px-6 py-4 flex items-center justify-between max-w-6xl mx-auto">
+            <div class="flex items-center gap-3">
+                <img src="BlogAssist.png" onerror="this.style.display='none'" alt="Logo" class="w-10 h-10 rounded-[1rem] shadow-sm">
+                <h1 class="text-2xl font-bold tracking-tight text-[#0a0a0a]">BlogAssist</h1>
             </div>
             
-            <button onclick="switchScreen('home')" id="nav-home" class="nav-item active flex md:w-full flex-col md:flex-row items-center gap-1 md:gap-3 p-2 md:py-3 md:px-4 rounded-xl hover:bg-gray-50 text-gray-500 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                <span class="text-xs md:text-base">Home</span>
-            </button>
+            <div class="hidden md:flex items-center gap-6">
+                <button onclick="switchScreen('home')" id="nav-home" class="nav-item active flex items-center gap-2 pb-1 text-gray-500 hover:text-black transition-colors">
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="switchScreen('knowledge')" id="nav-knowledge" class="nav-item flex items-center gap-2 pb-1 text-gray-500 hover:text-black transition-colors">
+                    <span>AI Brain</span>
+                </button>
+                <button onclick="switchScreen('logs')" id="nav-logs" class="nav-item flex items-center gap-2 pb-1 text-gray-500 hover:text-black transition-colors">
+                    <span>Activity</span>
+                </button>
+                <button onclick="switchScreen('premium')" id="nav-premium" class="nav-item flex items-center gap-2 pb-1 text-gray-500 hover:text-black transition-colors">
+                    <span>Pro</span>
+                </button>
+                <button onclick="switchScreen('settings')" id="nav-settings" class="nav-item flex items-center gap-2 pb-1 text-gray-500 hover:text-black transition-colors">
+                    <span>Settings</span>
+                </button>
+            </div>
             
-            <button onclick="switchScreen('knowledge')" id="nav-knowledge" class="nav-item flex md:w-full flex-col md:flex-row items-center gap-1 md:gap-3 p-2 md:py-3 md:px-4 rounded-xl hover:bg-gray-50 text-gray-500 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-                <span class="text-xs md:text-base">AI Brain</span>
-            </button>
-            
-            <button onclick="switchScreen('logs')" id="nav-logs" class="nav-item flex md:w-full flex-col md:flex-row items-center gap-1 md:gap-3 p-2 md:py-3 md:px-4 rounded-xl hover:bg-gray-50 text-gray-500 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                <span class="text-xs md:text-base">Activity</span>
+            <button onclick="logout()" class="hidden md:block bg-[#0a0a0a] text-white px-6 py-2.5 rounded-[2rem] font-bold text-sm hover:bg-black shadow-lg">
+                Logout
             </button>
 
-            <!-- Monetization / Customize Tab -->
-            <button onclick="switchScreen('premium')" id="nav-premium" class="nav-item flex md:w-full flex-col md:flex-row items-center gap-1 md:gap-3 p-2 md:py-3 md:px-4 rounded-xl hover:bg-gray-50 text-gray-500 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-                <span class="text-xs md:text-base">Pro & Custom</span>
-            </button>
-
-            <!-- Moved to mt-auto -->
-            <button onclick="switchScreen('settings')" id="nav-settings" class="nav-item md:mt-auto flex md:w-full flex-col md:flex-row items-center gap-1 md:gap-3 p-2 md:py-3 md:px-4 rounded-xl hover:bg-gray-50 text-gray-500 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                <span class="text-xs md:text-base">Settings</span>
-            </button>
-            
-            <button onclick="logout()" class="hidden md:flex md:w-full items-center gap-3 py-3 px-4 rounded-xl hover:bg-red-50 text-red-500 transition-colors mt-2">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                <span>Logout</span>
+            <!-- Mobile menu button placeholder -->
+            <button class="md:hidden text-gray-800">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
         </nav>
 
         <!-- Main Content -->
-        <main class="flex-1 p-4 md:p-8 overflow-y-auto w-full max-w-5xl mx-auto h-full">
+        <main class="flex-1 px-4 py-8 md:py-12 w-full max-w-6xl mx-auto">
             
             <!-- ================= ONBOARDING SCREEN ================= -->
             <div id="screen-onboarding" class="screen">
-                <div class="glass-card p-8 max-w-2xl mx-auto mt-10">
-                    <div class="flex justify-between mb-8 text-sm font-semibold text-gray-400">
-                        <span id="step1-ind" class="text-orange-500">1. AI Setup</span>
+                <div class="glass-card p-10 max-w-2xl mx-auto mt-10">
+                    <div class="flex justify-between mb-10 text-xs font-bold text-gray-400 tracking-wide uppercase">
+                        <span id="step1-ind" class="text-[#ff4f21]">1. AI Setup</span>
                         <span id="step2-ind">2. WordPress</span>
                         <span id="step3-ind">3. Strategy</span>
                     </div>
                     
                     <div id="onb-step1">
-                        <h2 class="text-2xl font-bold mb-2">Connect your AI</h2>
-                        <p class="text-gray-500 mb-6">Which brain should power your blogs?</p>
-                        <select id="onb_provider" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 mb-4"><option>Google Gemini</option><option>OpenAI</option></select>
-                        <input type="password" id="onb_api_key" placeholder="API Key" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 mb-6">
-                        <button onclick="nextStep(2)" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl">Next Step</button>
+                        <h2 class="text-3xl font-extrabold mb-2">Connect your AI</h2>
+                        <p class="text-gray-500 mb-8 font-medium">Which brain should power your blogs?</p>
+                        <select id="onb_provider" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 mb-4 focus:ring-2 focus:ring-[#ff4f21] outline-none"><option>Google Gemini</option><option>OpenAI</option></select>
+                        <input type="password" id="onb_api_key" placeholder="API Key" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 mb-8 focus:ring-2 focus:ring-[#ff4f21] outline-none">
+                        <button onclick="nextStep(2)" class="w-full bg-[#0a0a0a] text-white font-bold py-4 rounded-[2rem] shadow-xl hover:bg-black transition-all">Next Step</button>
                     </div>
 
                     <div id="onb-step2" class="hidden">
-                        <h2 class="text-2xl font-bold mb-2">Connect WordPress</h2>
-                        <div class="bg-blue-50 border border-blue-100 text-blue-800 p-4 rounded-xl mb-6 text-sm">
+                        <h2 class="text-3xl font-extrabold mb-2">Connect WordPress</h2>
+                        <div class="bg-blue-50/50 border border-blue-100 text-blue-800 p-5 rounded-[1.5rem] mb-8 text-sm">
                             <strong>Instructions:</strong> Go to your WordPress Admin -> Users -> Profile. Scroll to the bottom and create an "Application Password". Paste it below.
                         </div>
-                        <input type="text" id="onb_wp_url" placeholder="https://yoursite.com" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 mb-4">
-                        <input type="text" id="onb_wp_user" placeholder="Username" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 mb-4">
-                        <input type="password" id="onb_wp_pass" placeholder="Application Password" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 mb-6">
-                        <div class="flex gap-4">
-                            <button onclick="nextStep(1)" class="w-1/3 bg-gray-200 text-gray-800 font-bold py-3 rounded-xl">Back</button>
-                            <button onclick="nextStep(3)" class="w-2/3 bg-gray-900 text-white font-bold py-3 rounded-xl">Next Step</button>
+                        <input type="text" id="onb_wp_url" placeholder="https://yoursite.com" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 mb-4 focus:ring-2 focus:ring-[#ff4f21] outline-none">
+                        <input type="text" id="onb_wp_user" placeholder="Username" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 mb-4 focus:ring-2 focus:ring-[#ff4f21] outline-none">
+                        <input type="password" id="onb_wp_pass" placeholder="Application Password" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 mb-8 focus:ring-2 focus:ring-[#ff4f21] outline-none">
+                        <div class="flex gap-3">
+                            <button onclick="nextStep(1)" class="w-1/3 bg-gray-100 text-gray-800 font-bold py-4 rounded-[2rem] hover:bg-gray-200 transition-all">Back</button>
+                            <button onclick="nextStep(3)" class="w-2/3 bg-[#0a0a0a] text-white font-bold py-4 rounded-[2rem] shadow-xl hover:bg-black transition-all">Next Step</button>
                         </div>
                     </div>
 
                     <div id="onb-step3" class="hidden">
-                        <h2 class="text-2xl font-bold mb-2">Define Strategy</h2>
-                        <input type="text" id="onb_topic" placeholder="Blog Niche/Topic" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 mb-6">
-                        <div class="flex gap-4">
-                            <button onclick="nextStep(2)" class="w-1/3 bg-gray-200 text-gray-800 font-bold py-3 rounded-xl">Back</button>
-                            <button onclick="finishOnboarding()" class="w-2/3 bg-orange-500 text-white font-bold py-3 rounded-xl">Finish Setup!</button>
+                        <h2 class="text-3xl font-extrabold mb-2">Define Strategy</h2>
+                        <input type="text" id="onb_topic" placeholder="Blog Niche/Topic" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 mb-8 focus:ring-2 focus:ring-[#ff4f21] outline-none">
+                        <div class="flex gap-3">
+                            <button onclick="nextStep(2)" class="w-1/3 bg-gray-100 text-gray-800 font-bold py-4 rounded-[2rem] hover:bg-gray-200 transition-all">Back</button>
+                            <button onclick="finishOnboarding()" class="w-2/3 bg-[#ff4f21] text-white font-bold py-4 rounded-[2rem] shadow-xl shadow-orange-500/20 hover:bg-[#e0451b] transition-all">Finish Setup!</button>
                         </div>
                     </div>
                 </div>
@@ -168,26 +164,26 @@
 
                 <div>
                     <h3 class="font-bold text-gray-800 mb-3 ml-1">Agent Controls</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <button id="btnStart" class="bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-3xl flex flex-col items-center justify-center gap-2 shadow-md">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg>
-                            <span class="font-semibold text-sm">Start Auto</span>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <button id="btnStart" class="col-span-1 bg-white hover:bg-gray-50 text-[#0a0a0a] border border-gray-100 p-6 rounded-[2rem] flex flex-col items-center justify-center gap-3 shadow-sm transition-all">
+                            <div class="p-4 bg-gray-100 rounded-full text-black"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg></div>
+                            <span class="font-bold text-sm">Start Auto</span>
                         </button>
-                        <button id="btnStop" class="bg-gray-800 hover:bg-gray-900 text-white p-4 rounded-3xl flex flex-col items-center justify-center gap-2 shadow-md">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg>
-                            <span class="font-semibold text-sm">Stop Auto</span>
+                        <button id="btnStop" class="col-span-1 bg-white hover:bg-gray-50 text-[#0a0a0a] border border-gray-100 p-6 rounded-[2rem] flex flex-col items-center justify-center gap-3 shadow-sm transition-all">
+                            <div class="p-4 bg-gray-100 rounded-full text-black"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg></div>
+                            <span class="font-bold text-sm">Stop Auto</span>
                         </button>
-                        <button id="btnManual" class="col-span-2 md:col-span-1 bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-3xl flex flex-col items-center justify-center gap-2 shadow-md relative">
+                        <button id="btnManual" class="col-span-2 md:col-span-2 bg-[#ff4f21] hover:bg-[#e0451b] text-white p-6 rounded-[2rem] flex flex-col items-center justify-center gap-3 shadow-xl shadow-orange-500/20 relative transition-all">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                            <span class="font-semibold text-sm">Preview Draft</span>
-                            <div id="previewLoader" class="absolute inset-0 bg-blue-600 rounded-3xl flex items-center justify-center hidden">
+                            <span class="font-bold text-lg">Preview Draft</span>
+                            <div id="previewLoader" class="absolute inset-0 bg-[#e0451b] rounded-[2rem] flex items-center justify-center hidden">
                                 <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             </div>
                         </button>
-                        <button id="btnInstantPost" class="col-span-2 md:col-span-3 bg-green-500 hover:bg-green-600 text-white p-4 rounded-3xl flex flex-col items-center justify-center gap-2 shadow-md relative mt-4">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span class="font-semibold text-sm">Instant Generate & Publish Now</span>
-                            <div id="instantLoader" class="absolute inset-0 bg-green-600 rounded-3xl flex items-center justify-center hidden">
+                        <button id="btnInstantPost" class="col-span-2 md:col-span-4 bg-[#0a0a0a] hover:bg-black text-white p-6 rounded-[2rem] flex items-center justify-center gap-3 shadow-xl relative transition-all">
+                            <span class="font-bold text-lg">Instant Generate & Publish Now</span>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <div id="instantLoader" class="absolute inset-0 bg-black rounded-[2rem] flex items-center justify-center hidden">
                                 <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             </div>
                         </button>
@@ -223,19 +219,19 @@
             <!-- ================= PREMIUM/CUSTOMIZE SCREEN ================= -->
             <div id="screen-premium" class="screen h-full">
                 <div class="h-full flex flex-col">
-                    <header class="mb-6">
-                        <h2 class="text-3xl font-extrabold tracking-tight">Custom Development</h2>
-                        <p class="text-gray-500">Need specific features for your agency?</p>
+                    <header class="mb-8">
+                        <h2 class="text-4xl font-extrabold tracking-tight">Custom Development</h2>
+                        <p class="text-gray-500 font-medium mt-1">Need specific features for your agency?</p>
                     </header>
-                    <div class="glass-card p-8 text-center flex flex-col items-center justify-center border-orange-200 border-2">
-                        <svg class="w-16 h-16 text-orange-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                        <h3 class="text-2xl font-bold mb-2">Buy the Source Code</h3>
-                        <p class="text-gray-600 mb-6 max-w-md mx-auto">This software is fully customizable. You can purchase the white-label source code or hire us to build personal changes for your specific workflow.</p>
-                        <button class="bg-gray-900 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-black">Contact Sales</button>
+                    <div class="glass-card p-12 text-center flex flex-col items-center justify-center border-[#ff4f21]/20 border-2 shadow-2xl shadow-orange-500/10">
+                        <svg class="w-20 h-20 text-[#ff4f21] mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        <h3 class="text-3xl font-bold mb-4">Buy the Source Code</h3>
+                        <p class="text-gray-500 mb-8 max-w-lg mx-auto text-lg leading-relaxed">This software is fully customizable. You can purchase the white-label source code or hire us to build personal changes for your specific workflow.</p>
+                        <button class="bg-[#0a0a0a] text-white px-10 py-4 rounded-[2rem] font-bold text-lg shadow-xl hover:bg-black transition-all">Contact Sales</button>
                     </div>
 
                     <!-- Ads Placeholder -->
-                    <div class="mt-8 p-4 bg-gray-100 rounded-xl border border-dashed border-gray-300 text-center text-gray-400 text-sm">
+                    <div class="mt-12 p-6 bg-white/50 rounded-[2rem] border border-dashed border-gray-300 text-center text-gray-400 text-sm">
                         <!-- Google Adsense Tag -->
                         <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXX" data-ad-slot="XXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
                         <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
@@ -246,97 +242,97 @@
 
             <!-- ================= SETTINGS SCREEN ================= -->
             <div id="screen-settings" class="screen pb-10">
-                <header class="mb-6"><h2 class="text-3xl font-extrabold tracking-tight">Settings</h2></header>
+                <header class="mb-8"><h2 class="text-4xl font-extrabold tracking-tight">Settings</h2></header>
                 <form id="configForm" class="space-y-6">
-                    <div class="glass-card p-6">
-                        <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Content Strategy</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><label class="block text-xs font-semibold text-gray-500 mb-1">Topic</label><input type="text" id="topic" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3"></div>
+                    <div class="glass-card p-8">
+                        <h3 class="font-bold text-xl text-gray-800 mb-6 border-b border-gray-100 pb-3">Content Strategy</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Topic</label><input type="text" id="topic" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all"></div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-500 mb-1">Status</label>
-                                <select id="post_status" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3"><option value="draft">Draft</option><option value="publish">Publish</option></select>
+                                <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Status</label>
+                                <select id="post_status" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all"><option value="draft">Draft</option><option value="publish">Publish</option></select>
                             </div>
-                            <div><label class="block text-xs font-semibold text-gray-500 mb-1">Word Count</label><input type="number" id="word_count" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3"></div>
-                            <div><label class="block text-xs font-semibold text-gray-500 mb-1">Schedule (Hrs)</label><input type="number" id="schedule_interval" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3"></div>
+                            <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Word Count</label><input type="number" id="word_count" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all"></div>
+                            <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Schedule (Hrs)</label><input type="number" id="schedule_interval" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all"></div>
                         </div>
                     </div>
 
-                    <div class="glass-card p-6">
-                        <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Integrations</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><label class="block text-xs font-semibold text-gray-500 mb-1">AI Provider</label><select id="llm_provider" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3"><option>Google Gemini</option><option>OpenAI</option></select></div>
-                            <div><label class="block text-xs font-semibold text-gray-500 mb-1">API Key</label><input type="password" id="api_key" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3"></div>
-                            <div class="md:col-span-2"><label class="block text-xs font-semibold text-gray-500 mb-1">WP URL</label><input type="text" id="wp_url" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3"></div>
-                            <div><label class="block text-xs font-semibold text-gray-500 mb-1">WP User</label><input type="text" id="wp_user" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3"></div>
-                            <div><label class="block text-xs font-semibold text-gray-500 mb-1">WP App Password</label><input type="password" id="wp_password" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3"></div>
+                    <div class="glass-card p-8">
+                        <h3 class="font-bold text-xl text-gray-800 mb-6 border-b border-gray-100 pb-3">Integrations</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">AI Provider</label><select id="llm_provider" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all"><option>Google Gemini</option><option>OpenAI</option></select></div>
+                            <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">API Key</label><input type="password" id="api_key" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all"></div>
+                            <div class="md:col-span-2"><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">WP URL</label><input type="text" id="wp_url" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all"></div>
+                            <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">WP User</label><input type="text" id="wp_user" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all"></div>
+                            <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">WP App Password</label><input type="password" id="wp_password" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all"></div>
                         </div>
-                        <div class="mt-4 bg-gray-50 p-4 rounded-xl text-sm text-gray-600 border border-gray-200">
+                        <div class="mt-6 bg-blue-50/50 p-5 rounded-[1.5rem] text-sm text-blue-800 border border-blue-100">
                             <strong>WordPress Setup Info:</strong> To get an App Password, go to your WordPress Dashboard -> Users -> Profile. Scroll down to "Application Passwords", enter a name like "BlogAssist" and click "Add New". Paste the generated 24-character string above. No plugins required!
                         </div>
                     </div>
 
-                    <div class="glass-card p-6">
-                        <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Analytics</h3>
-                        <label class="block text-xs font-semibold text-gray-500 mb-1">Google Analytics ID</label>
-                        <input type="text" id="google_analytics_id" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3">
+                    <div class="glass-card p-8">
+                        <h3 class="font-bold text-xl text-gray-800 mb-6 border-b border-gray-100 pb-3">Analytics</h3>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Google Analytics ID</label>
+                        <input type="text" id="google_analytics_id" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all">
                     </div>
-                    <button type="submit" class="w-full bg-gray-900 text-white font-bold py-4 rounded-2xl">Save Settings</button>
+                    <button type="submit" class="w-full bg-[#0a0a0a] hover:bg-black text-white font-bold py-5 rounded-[2rem] text-lg shadow-xl transition-all">Save Settings</button>
                 </form>
             </div>
         </main>
         
         <!-- ================= PREVIEW MODAL OVERLAY ================= -->
-        <div id="preview-modal" class="fixed inset-0 z-50 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4">
-            <div class="bg-white w-full max-w-6xl h-[90vh] rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden relative">
+        <div id="preview-modal" class="fixed inset-0 z-50 bg-[#0a0a0a]/80 backdrop-blur-sm flex items-center justify-center p-6">
+            <div class="bg-[#f0f0f2] w-full max-w-6xl h-[90vh] rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row overflow-hidden relative border border-white/10">
                 
                 <!-- Left Pane: Preview -->
-                <div class="w-full md:w-2/3 h-full border-r border-gray-200 flex flex-col bg-gray-50">
-                    <div class="p-4 border-b border-gray-200 bg-white flex justify-between items-center">
+                <div class="w-full md:w-2/3 h-full border-r border-gray-200 flex flex-col bg-[#f0f0f2]">
+                    <div class="p-6 border-b border-gray-200 bg-white flex justify-between items-center rounded-tl-[2.5rem]">
                         <div>
-                            <span class="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded">DRAFT</span>
-                            <h3 id="prevTitle" class="text-xl font-bold mt-1">Generated Title Here</h3>
+                            <span class="bg-orange-100 text-[#ff4f21] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">DRAFT</span>
+                            <h3 id="prevTitle" class="text-2xl font-bold mt-2 font-['Syne']">Generated Title Here</h3>
                         </div>
                     </div>
-                    <div class="p-8 overflow-y-auto flex-1 preview-content text-gray-800 bg-white m-4 rounded-xl shadow-sm border border-gray-100" id="prevContent">
+                    <div class="p-8 overflow-y-auto flex-1 preview-content text-gray-800 bg-white m-6 rounded-[2rem] shadow-sm border border-gray-100" id="prevContent">
                         Loading...
                     </div>
                 </div>
 
                 <!-- Right Pane: Feedback Loop -->
-                <div class="w-full md:w-1/3 h-full bg-white flex flex-col">
-                    <div class="p-6 border-b border-gray-200">
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="text-lg font-bold">Review & Critique</h3>
-                            <button onclick="closePreview()" class="text-gray-400 hover:text-gray-700"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                <div class="w-full md:w-1/3 h-full bg-white flex flex-col rounded-tr-[2.5rem] rounded-br-[2.5rem]">
+                    <div class="p-8 border-b border-gray-100">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-2xl font-extrabold font-['Syne']">Review & Critique</h3>
+                            <button onclick="closePreview()" class="text-gray-400 hover:text-[#ff4f21] transition-colors bg-gray-100 p-2 rounded-full"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
                         </div>
-                        <p class="text-xs text-gray-500">The AI will rewrite the draft and learn your stylistic preferences for future posts.</p>
+                        <p class="text-sm text-gray-500 font-medium">The AI will rewrite the draft and learn your stylistic preferences for future posts.</p>
                     </div>
                     
-                    <div class="p-6 flex-1 overflow-y-auto">
-                        <label class="block text-xs font-bold text-gray-600 mb-2 uppercase">Quick Critiques</label>
-                        <div class="flex flex-wrap gap-2 mb-6">
-                            <button onclick="addCritique('Make it more professional')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">More Professional</button>
-                            <button onclick="addCritique('Make it more casual and funny')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">More Casual</button>
-                            <button onclick="addCritique('Shorter sentences, easier to read')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">Shorter Sentences</button>
-                            <button onclick="addCritique('Add more bullet points and lists')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">More Lists</button>
+                    <div class="p-8 flex-1 overflow-y-auto">
+                        <label class="block text-xs font-bold text-gray-400 mb-3 uppercase tracking-wide">Quick Critiques</label>
+                        <div class="flex flex-wrap gap-2 mb-8">
+                            <button onclick="addCritique('Make it more professional')" class="bg-gray-50 border border-gray-100 hover:border-[#ff4f21] hover:text-[#ff4f21] text-gray-700 px-4 py-2 rounded-full text-sm font-medium transition-all">More Professional</button>
+                            <button onclick="addCritique('Make it more casual and funny')" class="bg-gray-50 border border-gray-100 hover:border-[#ff4f21] hover:text-[#ff4f21] text-gray-700 px-4 py-2 rounded-full text-sm font-medium transition-all">More Casual</button>
+                            <button onclick="addCritique('Shorter sentences, easier to read')" class="bg-gray-50 border border-gray-100 hover:border-[#ff4f21] hover:text-[#ff4f21] text-gray-700 px-4 py-2 rounded-full text-sm font-medium transition-all">Shorter Sentences</button>
+                            <button onclick="addCritique('Add more bullet points and lists')" class="bg-gray-50 border border-gray-100 hover:border-[#ff4f21] hover:text-[#ff4f21] text-gray-700 px-4 py-2 rounded-full text-sm font-medium transition-all">More Lists</button>
                         </div>
 
-                        <label class="block text-xs font-bold text-gray-600 mb-2 uppercase">Custom Instructions</label>
-                        <textarea id="feedbackText" rows="4" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Rewrite the introduction to hook the reader. Don't use the word 'delve'."></textarea>
+                        <label class="block text-xs font-bold text-gray-400 mb-3 uppercase tracking-wide">Custom Instructions</label>
+                        <textarea id="feedbackText" rows="4" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 text-sm outline-none focus:ring-2 focus:ring-[#ff4f21] transition-all" placeholder="e.g. Rewrite the introduction to hook the reader. Don't use the word 'delve'."></textarea>
                         
-                        <button id="btnApplyFeedback" onclick="applyFeedback()" class="w-full mt-4 bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-3 rounded-xl transition-colors relative">
+                        <button id="btnApplyFeedback" onclick="applyFeedback()" class="w-full mt-6 bg-[#0a0a0a] hover:bg-black text-white font-bold py-4 rounded-[2rem] shadow-xl transition-all relative">
                             <span id="txtApply">Rewrite & Learn</span>
                             <div id="loaderApply" class="absolute inset-0 flex items-center justify-center hidden">
-                                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                <svg class="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             </div>
                         </button>
                     </div>
 
-                    <div class="p-6 border-t border-gray-200 bg-gray-50">
-                        <button id="btnPublishDraft" onclick="publishDraft()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl shadow-md transition-all relative">
+                    <div class="p-8 border-t border-gray-100 bg-gray-50 rounded-br-[2.5rem]">
+                        <button id="btnPublishDraft" onclick="publishDraft()" class="w-full bg-[#ff4f21] hover:bg-[#e0451b] text-white font-bold py-5 rounded-[2rem] shadow-xl shadow-orange-500/20 transition-all relative">
                             <span id="txtPub">Approve & Publish to WordPress</span>
                             <div id="loaderPub" class="absolute inset-0 flex items-center justify-center hidden">
-                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             </div>
                         </button>
                     </div>
