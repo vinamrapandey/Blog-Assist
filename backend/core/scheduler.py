@@ -35,7 +35,8 @@ def start_agent(interval_hours: int, job_function, job_id: str = 'blog_job'):
         trigger=IntervalTrigger(hours=interval_hours),
         id=job_id,
         name='Generate and publish blog post',
-        replace_existing=True
+        replace_existing=True,
+        next_run_time=datetime.datetime.now()
     )
     if not scheduler.running:
         scheduler.start()
