@@ -15,7 +15,7 @@ def run_generation_cycle(provider, key, topic, count, url, user, password, statu
         
         # 2. Publish to WordPress
         wp = WordPressHandler(url, user, password)
-        result = wp.create_post(title, content, status)
+        result = wp.publish_post(title, content, status)
         
         if "id" in result:
              log_message(f"Success! Post ID: {result['id']} (Status: {result.get('status')})", user_id=user_id)
