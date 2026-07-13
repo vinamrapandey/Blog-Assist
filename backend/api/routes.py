@@ -5,7 +5,7 @@ from backend.models.models import Config, Log, PostRecord, User, StyleGuidelines
 from backend.core.scheduler import start_agent, stop_agent, get_job_status, log_message
 from backend.services.tasks import run_generation_cycle
 from backend.services.llm_manager import LLMHandler
-from backend.services.wordpress_manager import WordPressHandler
+from backend.services.wp_manager import WordPressHandler
 from pydantic import BaseModel
 from typing import List
 from datetime import datetime, timedelta

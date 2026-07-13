@@ -26,13 +26,13 @@ def get_job_status(job_id: str = 'blog_job'):
         }
     return {"is_running": False, "next_run": "N/A"}
 
-def start_agent(interval_hours: int, job_function, job_id: str = 'blog_job'):
+def start_agent(interval_minutes: int, job_function, job_id: str = 'blog_job'):
     if scheduler.get_job(job_id):
         scheduler.remove_job(job_id)
         
     scheduler.add_job(
         func=job_function,
-        trigger=IntervalTrigger(hours=interval_hours),
+        trigger=IntervalTrigger(minutes=interval_minutes),
         id=job_id,
         name='Generate and publish blog post',
         replace_existing=True,
@@ -44,9 +44,9 @@ def start_agent(interval_hours: int, job_function, job_id: str = 'blog_job'):
     # We extract user_id from job_id if we used the convention auto_post_{user_id}
     try:
         user_id = int(job_id.split('_')[-1])
-        log_message(f"Agent started. Running every {interval_hours} hours.", user_id=user_id)
+        log_message(f"Agent started. Running every {interval_minutes} minutes.", user_id=user_id)
     except:
-        log_message(f"Agent started. Running every {interval_hours} hours.")
+        log_message(f"Agent started. Running every {interval_minutes} minutes.")
 
 def stop_agent(job_id: str = 'blog_job'):
     if scheduler.get_job(job_id):
