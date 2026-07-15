@@ -454,6 +454,7 @@
         let authMode = 'login';
         let chartInstance = null;
         let currentDraft = null;
+        let countdownInterval = null;
 
         // Init Check
         function showAuth() {
@@ -787,8 +788,45 @@
             try {
                 const res = await fetchAuth(`${API_URL}/status`);
                 const data = await res.json();
-                document.getElementById('nextRunBadge').innerText = data.is_running ? `Next: ${data.next_run}` : 'Inactive';
-                document.getElementById('nextRunBadge').className = data.is_running ? 'bg-orange-100 text-orange-700 text-xs px-3 py-1 rounded-full font-semibold' : 'bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full font-semibold';
+                
+                const badge = document.getElementById('nextRunBadge');
+                const btnStart = document.getElementById('btnStart');
+                const btnStartIconBg = btnStart.querySelector('div');
+                const btnStartText = btnStart.querySelector('span');
+
+                if (data.is_running) {
+                    if (countdownInterval) clearInterval(countdownInterval);
+                    const targetDate = new Date(data.next_run).getTime();
+                    
+                    const updateCountdown = () => {
+                        const now = new Date().getTime();
+                        const distance = targetDate - now;
+                        if (distance < 0) {
+                            badge.innerText = "Running Post...";
+                        } else {
+                            const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                            const s = Math.floor((distance % (1000 * 60)) / 1000);
+                            badge.innerText = `Next Post in: ${h}h ${m}m ${s}s`;
+                        }
+                    };
+                    updateCountdown();
+                    countdownInterval = setInterval(updateCountdown, 1000);
+                    
+                    badge.className = 'bg-orange-100 text-[#ff4f21] text-xs md:text-sm px-4 py-1.5 rounded-full font-bold shadow-sm animate-pulse';
+                    
+                    btnStart.className = 'col-span-1 bg-[#ff4f21] text-white border border-transparent p-6 rounded-[2rem] flex flex-col items-center justify-center gap-3 shadow-[0_0_20px_rgba(255,79,33,0.4)] transition-all transform scale-105';
+                    btnStartIconBg.className = 'p-4 bg-white/20 rounded-full text-white animate-pulse';
+                    btnStartText.innerText = 'Auto-Pilot Active';
+                } else {
+                    if (countdownInterval) clearInterval(countdownInterval);
+                    badge.innerText = 'Inactive';
+                    badge.className = 'bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full font-semibold';
+                    
+                    btnStart.className = 'col-span-1 bg-white hover:bg-gray-50 text-[#0a0a0a] border border-gray-100 p-6 rounded-[2rem] flex flex-col items-center justify-center gap-3 shadow-sm transition-all';
+                    btnStartIconBg.className = 'p-4 bg-gray-100 rounded-full text-black';
+                    btnStartText.innerText = 'Start Auto';
+                }
             } catch(err) {}
         }
 

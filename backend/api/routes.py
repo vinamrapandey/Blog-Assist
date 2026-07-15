@@ -70,22 +70,34 @@ def start_agent_api(db: Session = Depends(get_db), current_user: User = Depends(
     if config.llm_provider != "Simulated" and not config.api_key:
         raise HTTPException(status_code=400, detail="API Key required for real models.")
 
+    # Extract variables before closure to prevent DetachedInstanceError
+    provider = config.llm_provider
+    key = config.api_key
+    topic = config.topic
+    count = config.word_count
+    url = config.wp_url
+    user = config.wp_user
+    password = config.wp_password
+    status = config.post_status
+    user_id = current_user.id
+    schedule_interval = config.schedule_interval
+
     def job_wrapper():
         run_generation_cycle(
-            provider=config.llm_provider,
-            key=config.api_key,
-            topic=config.topic,
-            count=config.word_count,
-            url=config.wp_url,
-            user=config.wp_user,
-            password=config.wp_password,
-            status=config.post_status,
-            user_id=current_user.id
+            provider=provider,
+            key=key,
+            topic=topic,
+            count=count,
+            url=url,
+            user=user,
+            password=password,
+            status=status,
+            user_id=user_id
         )
 
     # Note: APScheduler in a multi-tenant environment is complex. 
     # For now, we namespace the job by user_id to prevent conflicts.
-    start_agent(config.schedule_interval, job_wrapper, job_id=f"auto_post_{current_user.id}")
+    start_agent(schedule_interval, job_wrapper, job_id=f"auto_post_{current_user.id}")
     config.is_agent_running = True
     db.commit()
     return {"status": "success", "message": "Agent started"}
