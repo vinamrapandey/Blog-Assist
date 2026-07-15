@@ -28,7 +28,7 @@ class Config(Base):
     wp_password = Column(String, default="")
     topic = Column(String, default="Tech")
     word_count = Column(Integer, default=500)
-    schedule_interval = Column(Integer, default=24)
+    schedule_interval = Column(Integer, default=1440)
     post_status = Column(String, default="draft")
     is_agent_running = Column(Boolean, default=False)
     google_analytics_id = Column(String, default="")

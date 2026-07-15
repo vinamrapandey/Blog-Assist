@@ -345,7 +345,21 @@
                                 <select id="post_status" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all"><option value="draft">Draft</option><option value="publish">Publish</option></select>
                             </div>
                             <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Word Count</label><input type="number" id="word_count" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all"></div>
-                            <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Schedule (Hrs)</label><input type="number" id="schedule_interval" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all"></div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Schedule (Hrs)</label>
+                                <select id="schedule_interval" class="w-full bg-gray-50/50 border border-gray-100 rounded-[1.5rem] p-4 focus:ring-2 focus:ring-[#ff4f21] outline-none transition-all">
+                                    <option value="1">1 min (Testing)</option>
+                                    <option value="360">6 Hours (Four Per Day)</option>
+                                    <option value="720">12 Hours (Two Per Day)</option>
+                                    <option value="1440">24 Hours (One per Day)</option>
+                                    <option value="2880">48 Hours (One per 2 Days)</option>
+                                    <option value="4320">72 Hours (One per 3 Days)</option>
+                                    <option value="5760">96 Hours (One per 4 Days)</option>
+                                    <option value="7200">120 Hours (One per 5 Days)</option>
+                                    <option value="8640">144 Hours (One per 6 Days)</option>
+                                    <option value="10080">168 Hours (One per Week)</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -543,7 +557,7 @@
                 wp_user: document.getElementById('onb_wp_user').value,
                 wp_password: document.getElementById('onb_wp_pass').value,
                 topic: document.getElementById('onb_topic').value,
-                word_count: 500, schedule_interval: 24, post_status: 'draft', google_analytics_id: ''
+                word_count: 500, schedule_interval: 1440, post_status: 'draft', google_analytics_id: ''
             };
             try {
                 const res = await fetchAuth(`${API_URL}/config`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(config) });
@@ -729,7 +743,7 @@
             document.getElementById('wp_password').value = data.wp_password || '';
             document.getElementById('topic').value = data.topic || 'Tech';
             document.getElementById('word_count').value = data.word_count || 500;
-            document.getElementById('schedule_interval').value = data.schedule_interval || 24;
+            document.getElementById('schedule_interval').value = data.schedule_interval || 1440;
             document.getElementById('post_status').value = data.post_status || 'draft';
             document.getElementById('google_analytics_id').value = data.google_analytics_id || '';
             if (data.google_analytics_id) injectGA(data.google_analytics_id);
